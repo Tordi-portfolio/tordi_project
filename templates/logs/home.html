@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Responsive scaling -->
+  <title>LAS Viewer — Upload</title>
+  <link rel="stylesheet" href="/static/logs/las.css">
+  <style>
+    /* Core body styling */
+    .lv-body {
+      font-family: Arial, sans-serif;
+      background: #121212;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* Container */
+    .lv-container {
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+
+    /* Titles */
+    .lv-title {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .lv-subtitle {
+      font-size: 1rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #ccc;
+    }
+
+    /* Form */
+    .lv-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .lv-form-row input[type="file"] {
+      padding: 10px;
+      background: #333;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    /* Button */
+    .lv-btn {
+      background: #007bff;
+      color: #fff;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s;
+    }
+    .lv-btn:hover {
+      background: #0056b3;
+    }
+
+    /* Note */
+    .lv-note {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #bbb;
+      text-align: center;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .lv-container {
+        margin: 20px;
+        padding: 15px;
+      }
+      .lv-title {
+        font-size: 1.6rem;
+      }
+      .lv-subtitle {
+        font-size: 0.9rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .lv-container {
+        margin: 15px;
+        padding: 10px;
+      }
+      .lv-title {
+        font-size: 1.4rem;
+      }
+      .lv-subtitle {
+        font-size: 0.85rem;
+      }
+      .lv-btn {
+        padding: 8px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body class="lv-body">
+  <div class="lv-container">
+    <h1 class="lv-title">LAS Viewer</h1>
+    <p class="lv-subtitle">Upload a <code>.las</code> file and explore well logs.</p>
+
+    <form class="lv-form" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="lv-form-row">
+        {{ form.file }}
+      </div>
+      <button class="lv-btn" type="submit">Upload &amp; Open</button>
+    </form>
+
+    <div class="lv-note">
+      <p>No LAS file handy? Grab any sample <em>.las</em> and upload — we’ll parse WELL info, curves, and let you plot instantly.</p>
+    </div>
+  </div>
+</body>
+</html>
+
+{% endblock %}

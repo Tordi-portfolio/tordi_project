@@ -1,0 +1,64 @@
+/* global layout */
+.lv-body {
+  background: #0b0b0c;
+  color: #e5e7eb;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Helvetica Neue", Arial;
+  margin: 0;
+}
+
+.lv-container { max-width: 900px; margin: 6rem auto; padding: 0 1rem; }
+.lv-title { font-size: 2rem; margin: 0 0 0.5rem; }
+.lv-subtitle { color: #9ca3af; margin: 0 0 2rem; }
+
+.lv-form { background: #151518; padding: 1rem; border: 1px solid #23232a; border-radius: 10px; }
+.lv-form-row input[type=file] {
+  width: 100%; padding: 1rem; border: 1px dashed #3b3b44; border-radius: 8px; color: #ddd; background: #0b0b0c;
+}
+.lv-btn {
+  margin-top: 1rem; background: #2563eb; color: white; border: none; padding: 0.8rem 1.2rem;
+  border-radius: 8px; cursor: pointer; font-weight: 600;
+}
+.lv-btn:hover { background: #1d4ed8; }
+
+.lv-note { margin-top: 1rem; color: #9ca3af; }
+
+/* top bar */
+.lv-topbar { position: sticky; top: 0; background: #0b0b0c; border-bottom: 1px solid #23232a; z-index: 10; }
+.lv-topbar-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 1rem; align-items: center; padding: 0.75rem 1rem; }
+.lv-logo { color: #fff; text-decoration: none; font-weight: 700; }
+.lv-file-name { color: #9ca3af; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* cards */
+.lv-main { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+.lv-card { background: #111115; border: 1px solid #23232a; border-radius: 10px; padding: 1rem; margin-bottom: 1.25rem; }
+.lv-card-title { margin: 0 0 1rem; font-size: 1.25rem; }
+
+/* key-values grid */
+.lv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.75rem; }
+.lv-kv { background: #0b0b0c; border: 1px solid #23232a; border-radius: 8px; padding: 0.75rem; }
+.lv-k { font-size: 0.75rem; color: #9ca3af; }
+.lv-v { font-weight: 600; }
+
+/* curves list + plot layout */
+.lv-curves { display: grid; grid-template-columns: 420px 1fr; gap: 1rem; }
+@media (max-width: 1024px) { .lv-curves { grid-template-columns: 1fr; } }
+
+.lv-curve-list { border: 1px solid #23232a; border-radius: 10px; overflow: hidden; }
+.lv-curve-list-head,
+.lv-curve-row { display: grid; grid-template-columns: 120px 80px 1fr 100px 100px; gap: 0.5rem; align-items: center; }
+.lv-curve-list-head { background: #0b0b0c; padding: 0.5rem 0.75rem; color: #9ca3af; font-size: 0.85rem; }
+.lv-curve-row {
+  width: 100%; text-align: left; padding: 0.6rem 0.75rem; background: #111115; border: none; border-top: 1px solid #23232a; cursor: pointer; color: #e5e7eb;
+}
+.lv-curve-row:hover { background: #16161b; }
+.lv-active { outline: 2px solid #2563eb; }
+.lv-mn { font-weight: 700; }
+.lv-descr { color: #cbd5e1; }
+
+.lv-plot { border: 1px solid #23232a; border-radius: 10px; padding: 0.5rem; min-height: 520px; background: #0b0b0c; display:flex; flex-direction:column; }
+.lv-plot-el { width: 100%; height: 100%; min-height: 480px; }
+.lv-plot-hint { color: #9ca3af; font-size: 0.9rem; margin-top: 0.5rem; }
+
+/* errors */
+.lv-error { color: #fca5a5; }
+.lv-muted { color: #9ca3af; }

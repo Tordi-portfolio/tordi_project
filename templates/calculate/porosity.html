@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Porosity Calculator</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b0f1a;
+            color: white;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, #0f172a, #1e3a8a);
+            font-size: 22px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: #111827;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0f172a;
+            border-left: 3px solid #3b82f6;
+        }
+
+        a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+    </style>
+
+    <style>
+        .result-note{
+            margin-top:20px;
+            padding:15px;
+            background:#10182f;
+            border-left:5px solid #00d4ff;
+            border-radius:8px;
+            color:#e6e6e6;
+        }
+
+        .result-note h3{
+            color:#00d4ff;
+        }
+        .result-note h4{
+            margin-top:10px;
+            color:#ffffff;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">🪨 Porosity Calculator (Density Log Method)</div>
+
+<div class="container">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Matrix Density (ρma)</label>
+        <input type="number" name="rho_ma" step="any">
+
+        <label>Fluid Density (ρf)</label>
+        <input type="number" name="rho_f" step="any">
+
+        <label>Bulk Density (ρb)</label>
+        <input type="number" name="rho_b" step="any">
+
+        <button type="submit">Calculate Porosity</button>
+    </form>
+
+    {% if result %}
+    <div class="result">
+        <strong>Porosity Result:</strong><br>
+        {{ result }}
+    </div>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
+
+</div>
+
+<div class="result-note">
+    <h3>📘 About Porosity</h3>
+    <p>
+        Porosity (φ) is the fraction of void space in a rock that can store fluids such as oil, gas, or water.
+        It is a key reservoir quality indicator in petrophysics.
+    </p>
+
+    <h4>📐 Formula (Density Log Method)</h4>
+    <p>
+        φ = (ρma − ρb) / (ρma − ρf)
+    </p>
+
+    <h4>📊 Units</h4>
+    <ul>
+        <li>ρma (Matrix density): g/cm³</li>
+        <li>ρb (Bulk density): g/cm³</li>
+        <li>ρf (Fluid density): g/cm³</li>
+        <li>Porosity is dimensionless (or fraction / %)</li>
+    </ul>
+
+    <h4>⚠️ How to Use</h4>
+    <p>
+        Enter all density values in <b>g/cm³</b>.  
+        If you are using percentage porosity, divide the final result by 100.
+    </p>
+</div>
+
+</body>
+</html>

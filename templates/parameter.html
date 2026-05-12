@@ -1,0 +1,305 @@
+
+{% extends 'base.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+
+  <div class="las-info-container">
+
+  <h2 class="las-title">WELL Information</h2>
+  <div class="las-grid">
+
+    <div class="las-card"><strong>STRT</strong><p>Start Depth – Depth where logging begins.</p></div>
+    <div class="las-card"><strong>STOP</strong><p>Stop Depth – Depth where logging ends.</p></div>
+    <div class="las-card"><strong>STEP</strong><p>Depth Increment – Interval between measurements.</p></div>
+    <div class="las-card"><strong>NULL</strong><p>Null Value – Represents missing data.</p></div>
+    <div class="las-card"><strong>COMP</strong><p>Company – Operating company of the well.</p></div>
+    <div class="las-card"><strong>WELL</strong><p>Well Name – Official well identification name.</p></div>
+    <div class="las-card"><strong>LOC</strong><p>Location – Legal land description.</p></div>
+    <div class="las-card"><strong>CNTY</strong><p>County – County of well location.</p></div>
+    <div class="las-card"><strong>FLD</strong><p>Field – Oil or gas field name.</p></div>
+    <div class="las-card"><strong>STAT</strong><p>State – State where well is located.</p></div>
+    <div class="las-card"><strong>CTRY</strong><p>Country – Country of well location.</p></div>
+    <div class="las-card"><strong>DATE</strong><p>Logging Date – Date log was recorded.</p></div>
+    <div class="las-card"><strong>API</strong><p>API Number – Unique well identification number.</p></div>
+    <div class="las-card"><strong>SRVC</strong><p>Service Company – Company that performed logging.</p></div>
+
+  </div>
+
+  <h2 class="las-title">Parameters</h2>
+  <div class="las-grid">
+
+    <div class="las-card"><strong>BHT</strong><p>Bottom Hole Temperature – Temperature at well bottom.</p></div>
+    <div class="las-card"><strong>RMF</strong><p>Mud Filtrate Resistivity – Electrical resistivity of mud filtrate.</p></div>
+    <div class="las-card"><strong>RMFT</strong><p>Mud Filtrate Temperature – Temperature of mud filtrate measurement.</p></div>
+    <div class="las-card"><strong>EKB</strong><p>Elevation Kelly Bushing – Elevation reference point.</p></div>
+    <div class="las-card"><strong>SECT</strong><p>Section – Land survey section number.</p></div>
+    <div class="las-card"><strong>TOWN</strong><p>Township – Township survey number.</p></div>
+    <div class="las-card"><strong>RANG</strong><p>Range – Range survey number.</p></div>
+
+  </div>
+
+</div>
+
+
+<div class="las-curves-explained">
+
+  <h1 class="main-title">Well Log Curves – Engineering Explanation</h1>
+
+  <!-- ================= DEPTH ================= -->
+  <div class="curve-card">
+    <h2>DEPT – Depth</h2>
+    <p>Represents measured depth of the well (ft or m). All log measurements are plotted against depth.</p>
+    <div class="formula-box">
+      Logged Interval = Max Depth − Min Depth
+    </div>
+  </div>
+
+  <!-- ================= DT ================= -->
+  <div class="curve-card">
+    <h2>DT – Sonic Log (ΔT)</h2>
+    <p>Measures acoustic travel time through formation (μs/ft). Used to estimate porosity.</p>
+
+    <div class="formula-box">
+      Φ = (ΔTlog − ΔTmatrix) / (ΔTfluid − ΔTmatrix)
+    </div>
+
+    <p><strong>Where:</strong></p>
+    <ul>
+      <li>Φ = Porosity</li>
+      <li>ΔTlog = Measured sonic travel time</li>
+      <li>ΔTmatrix = Travel time in rock matrix</li>
+      <li>ΔTfluid = Travel time in fluid</li>
+    </ul>
+  </div>
+
+  <!-- ================= RESD ================= -->
+  <div class="curve-card">
+    <h2>RESD – Deep Resistivity</h2>
+    <p>Measures electrical resistivity of formation (ohm·m). Used to detect hydrocarbons.</p>
+
+    <div class="formula-box">
+      Swⁿ = (a × Rw) / (Φᵐ × Rt)
+    </div>
+
+    <p>Archie’s Equation for water saturation calculation.</p>
+  </div>
+
+  <!-- ================= SP ================= -->
+  <div class="curve-card">
+    <h2>SP – Spontaneous Potential</h2>
+    <p>Measures natural electrical potential between borehole and formation (mV).</p>
+
+    <div class="formula-box">
+      SSP = −K log10(Rmf / Rw)
+    </div>
+
+    <p>Used for lithology identification and estimating formation water resistivity.</p>
+  </div>
+
+  <!-- ================= GR ================= -->
+  <div class="curve-card">
+    <h2>GR – Gamma Ray</h2>
+    <p>Measures natural radioactivity (API units). Used to differentiate shale from sand.</p>
+
+    <div class="formula-box">
+      IGR = (GRlog − GRmin) / (GRmax − GRmin)
+    </div>
+
+    <p>Gamma Ray Index (IGR) used to estimate shale volume (Vsh).</p>
+  </div>
+
+  <!-- ================= CALI ================= -->
+  <div class="curve-card">
+    <h2>CALI (Caliper)</h2>
+    <p>Measures the actual size and shape of the borehole. If CALI is larger than BITSIZE, the hole is "washed out"; if smaller, a "mudcake" has formed.</p>
+  </div>
+
+  <!-- ================= BITSIZE ================= -->
+  <div class="curve-card">
+    <h2>BITSIZE</h2>
+    <p>Measures the The diameter of the drill bit used to drill that section (12.25 inches).</p>
+  </div>
+
+   <!-- ================= TENS / DHTN (Tension) ================= -->
+  <div class="curve-card">
+    <h2>TENS / DHTN (Tension)</h2>
+    <p>The pull on the logging cable. TENS is usually surface tension, while DHTN is downhole tension. High tension can indicate the tool is getting stuck.</p>
+  </div>
+
+  <!-- ================= RHOB (Bulk Density) ================= -->
+  <div class="curve-card">
+    <h2>RHOB (Bulk Density)</h2>
+    <p>Measures the density of the formation. Used to calculate porosity and identify lithology.</p>
+  </div>
+
+  <!-- ================= NPHI (Neutron Porosity) ================= -->
+  <div class="curve-card">
+    <h2>NPHI (Neutron Porosity)</h2>
+    <p>Measures the hydrogen index. When paired with RHOB, it helps identify gas zones (the "crossover" effect) and fluid types.</p>
+  </div>
+
+  <!-- ================= PE (Photoelectric Index) ================= -->
+  <div class="curve-card">
+    <h2>PE (Photoelectric Index)</h2>
+    <p>Directly indicates the mineralogy of the rock matrix (e.g., ~1.8 for sandstone, ~3.1 for shales, ~5.0 for limestone).</p>
+  </div>
+
+  <!-- ================= MDT / DXDT / DYDT (Acoustic/Sonic) ================= -->
+  <div class="curve-card">
+    <h2>MDT (Acoustic/Sonic)</h2>
+    <p>These measure the travel time of sound through the rock. MDT (MonoDeltaT) is used to calculate "Sonic Porosity."</p>
+  </div>
+
+  <!-- ================= RT10, RT20, RT30 ================= -->
+  <div class="curve-card">
+    <h2>RT10, RT20, RT30</h2>
+    <p>"Shallow" measurements that look at the area near the wellbore (invaded zone).</p>
+  </div>
+
+  <!-- ================= DIAGRAM ================= -->
+  <div class="diagram-section">
+    <h2>Simple Log Track Illustration</h2>
+
+    <svg width="600" height="300">
+      <!-- Depth axis -->
+      <line x1="50" y1="20" x2="50" y2="250" stroke="#facc15" stroke-width="3"/>
+      <text x="20" y="140" fill="#facc15" transform="rotate(-90 20,140)">DEPTH</text>
+
+      <!-- GR track -->
+      <rect x="100" y="40" width="60" height="180" fill="#1e293b" stroke="#38bdf8"/>
+      <text x="115" y="30" fill="#38bdf8">GR</text>
+
+      <!-- Resistivity track -->
+      <rect x="200" y="40" width="60" height="180" fill="#1e293b" stroke="#22c55e"/>
+      <text x="205" y="30" fill="#22c55e">RESD</text>
+
+      <!-- Sonic track -->
+      <rect x="300" y="40" width="60" height="180" fill="#1e293b" stroke="#ef4444"/>
+      <text x="315" y="30" fill="#ef4444">DT</text>
+
+      <!-- SP track -->
+      <rect x="400" y="40" width="60" height="180" fill="#1e293b" stroke="#a855f7"/>
+      <text x="415" y="30" fill="#a855f7">SP</text>
+    </svg>
+  </div>
+
+</div>
+
+
+
+<style>
+.las-curves-explained {
+  background: #0f172a;
+  padding: 40px;
+  border-radius: 15px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #e2e8f0;
+}
+
+.main-title {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #38bdf8;
+}
+
+.curve-card {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.5);
+  transition: 0.3s ease;
+}
+
+.curve-card:hover {
+  transform: translateY(-4px);
+}
+
+.curve-card h2 {
+  color: #facc15;
+  margin-bottom: 10px;
+}
+
+.formula-box {
+  background: #111827;
+  padding: 10px;
+  border-radius: 6px;
+  font-family: monospace;
+  color: #22c55e;
+  margin: 10px 0;
+}
+
+.diagram-section {
+  margin-top: 40px;
+  text-align: center;
+}
+
+.diagram-section h2 {
+  color: #facc15;
+  margin-bottom: 20px;
+}
+</style>
+
+
+
+<style>
+.las-info-container {
+  background: #0f172a;
+  padding: 30px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+  color: #f1f5f9;
+}
+
+.las-title {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  color: #38bdf8;
+  border-left: 5px solid #38bdf8;
+  padding-left: 10px;
+}
+
+.las-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.las-card {
+  background: linear-gradient(145deg, #1e293b, #0f172a);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: transform 0.2s ease;
+}
+
+.las-card:hover {
+  transform: translateY(-5px);
+}
+
+.las-card strong {
+  color: #facc15;
+  font-size: 16px;
+}
+
+.las-card p {
+  font-size: 14px;
+  margin-top: 5px;
+  color: #cbd5e1;
+}
+</style>
+
+  
+</body>
+</html>
+
+{% endblock %}

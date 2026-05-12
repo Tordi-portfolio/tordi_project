@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LAS Viewer — {{ obj.file.name }}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/static/logs/las.css">
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #121212;
+      color: #f5f5f5;
+    }
+
+    .lv-topbar {
+      background-color: #1e1e1e;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .lv-logo {
+      color: #ffcc00;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .lv-file-name {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-top: 5px;
+    }
+
+    .lv-main {
+      padding: 15px;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    .lv-card {
+      background-color: #1e1e1e;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+    }
+    .lv-card-title {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      color: #ffcc00;
+    }
+
+    .lv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+    }
+
+    .lv-kv {
+      background-color: #2a2a2a;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .lv-k {
+      font-weight: bold;
+      margin-bottom: 4px;
+      color: #ffcc00;
+    }
+    .lv-v {
+      font-size: 0.9rem;
+      color: #ccc;
+    }
+
+    /* Curves list + plot layout */
+    .lv-curves {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .lv-curve-list {
+      flex: 1;
+      min-width: 250px;
+      max-width: 400px;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .lv-curve-list-head,
+    .lv-curve-row {
+      display: grid;
+      grid-template-columns: 1fr auto 2fr auto auto;
+      gap: 5px;
+      padding: 8px;
+      align-items: center;
+    }
+    .lv-curve-list-head {
+      background-color: #ffcc00;
+      color: #000;
+      font-weight: bold;
+      font-size: 0.85rem;
+    }
+    .lv-curve-row {
+      background-color: transparent;
+      border: none;
+      text-align: left;
+      width: 100%;
+      color: #f5f5f5;
+      cursor: pointer;
+    }
+    .lv-curve-row:hover {
+      background-color: rgba(255,255,255,0.05);
+    }
+    .lv-active {
+      background-color: rgba(255,204,0,0.2) !important;
+    }
+    .lv-descr {
+      font-size: 0.8rem;
+      color: #ccc;
+    }
+
+    .lv-plot {
+      flex: 2;
+      min-width: 300px;
+      background-color: #2a2a2a;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .lv-plot-el {
+      width: 100%;
+      height: 400px;
+    }
+    .lv-plot-hint {
+      text-align: center;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 8px;
+    }
+
+    /* Responsive tweaks */
+    @media screen and (max-width: 768px) {
+      .lv-curves {
+        flex-direction: column;
+      }
+      .lv-curve-list-head {
+        display: none;
+      }
+      .lv-curve-row {
+        display: block;
+        border-bottom: 1px solid #444;
+      }
+      .lv-curve-row > div {
+        display: block;
+        font-size: 0.85rem;
+      }
+      .lv-mn {
+        font-weight: bold;
+        color: #ffcc00;
+      }
+    }
+  </style>
+</head>
+<body class="lv-body">
+  <header class="lv-topbar">
+    <a class="lv-logo" href="/">LAS Information</a>
+    <div class="lv-file-name">{{ obj.file.name|escape }}</div>
+  </header>
+
+  <main class="lv-main">
+    <section class="lv-card">
+      <h2 class="lv-card-title">WELL Information</h2>
+      <div class="lv-grid">
+        {% for k, v in well_info.items %}
+        <div class="lv-kv">
+          <div class="lv-k">{{ k }}</div>
+          <div class="lv-v">{{ v }}</div>
+        </div>
+        {% empty %}
+        <p class="lv-muted">No WELL header found.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="lv-card">
+      <h2 class="lv-card-title">Parameters</h2>
+      <div class="lv-grid">
+        {% for k, v in params.items %}
+        <div class="lv-kv">
+          <div class="lv-k">{{ k }}</div>
+          <div class="lv-v">{{ v }}</div>
+        </div>
+        {% empty %}
+        <p class="lv-muted">No parameters section present.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="lv-card">
+      <h2 class="lv-card-title">Curves</h2>
+      <div class="lv-curves">
+        <div class="lv-curve-list">
+          <div class="lv-curve-list-head">
+            <div>Mnemonic</div><div>Unit</div><div>Description</div><div>Min</div><div>Max</div>
+          </div>
+          {% for c in curves %}
+          <button class="lv-curve-row" data-mnemonic="{{ c.mnemonic }}">
+            <div class="lv-mn">{{ c.mnemonic }}</div>
+            <div>{{ c.unit }}</div>
+            <div class="lv-descr">{{ c.descr }}</div>
+            <div>{{ c.min }}</div>
+            <div>{{ c.max }}</div>
+          </button>
+          {% endfor %}
+        </div>
+
+        <div class="lv-plot">
+          <div id="lv-plot-el" class="lv-plot-el"></div>
+          <div class="lv-plot-hint">Click a curve to plot vs {{ index_label }}.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const plotEl = document.getElementById('lv-plot-el');
+    const rows = document.querySelectorAll('.lv-curve-row');
+    const pk = "{{ obj.pk }}";
+    const indexLabelFallback = "{{ index_label|escapejs }}";
+
+    async function loadAndPlot(mnemonic) {
+      const res = await fetch(`/api/curve/${pk}/${mnemonic}/`);
+      if (!res.ok) {
+        alert("Failed to load curve data.");
+        return;
+      }
+      const data = await res.json();
+      const x = data.x;
+      const y = data.y;
+      const indexLabel = data.index_label || indexLabelFallback;
+
+      const trace = {
+        x: y,
+        y: x,
+        mode: 'lines',
+        type: 'scatter',
+        hovertemplate: `${mnemonic}: %{x}<br>${indexLabel}: %{y}<extra></extra>`
+      };
+
+      const layout = {
+        margin: {l: 60, r: 20, t: 20, b: 40},
+        xaxis: {title: mnemonic},
+        yaxis: {title: indexLabel, autorange: 'reversed'},
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        font: {color: '#e5e7eb'}
+      };
+
+      Plotly.newPlot(plotEl, [trace], layout, {displayModeBar: true, responsive: true});
+    }
+
+    rows.forEach(btn => {
+      btn.addEventListener('click', () => {
+        rows.forEach(b => b.classList.remove('lv-active'));
+        btn.classList.add('lv-active');
+        loadAndPlot(btn.getAttribute('data-mnemonic'));
+      });
+    });
+  </script>
+</body>
+</html>
+
+{% endblock %}
