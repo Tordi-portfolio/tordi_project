@@ -1,0 +1,12 @@
+asgiref==3.11.1
+Django==6.0.5
+django-extensions==4.1
+gunicorn==26.0.0
+lasio==0.32
+numpy==2.4.4
+packaging==26.2
+pandas==3.0.2
+python-dateutil==2.9.0.post0
+six==1.17.0
+sqlparse==0.5.5
+tzdata==2026.2
