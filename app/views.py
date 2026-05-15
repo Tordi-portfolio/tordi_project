@@ -249,6 +249,8 @@ def sw_view(request):
     })
 
 
+
+import numpy as np
 import math
 from django.shortcuts import render
 
@@ -256,26 +258,35 @@ def perm_view(request):
     result = None
     method = None
 
+    x_values = []
+    k_values = []
+
     if request.method == "POST":
         method = request.POST.get("method")
 
-        # -------------------------
+        # =========================
         # EMPIRICAL METHOD
-        # -------------------------
+        # =========================
         if method == "empirical":
             C = float(request.POST.get("C"))
             phi = float(request.POST.get("phi"))
             swi = float(request.POST.get("swi"))
 
-            if swi == 0:
-                result = "Invalid Swi (cannot be zero)"
-            else:
+            if swi != 0:
                 k = C * (phi ** 4) / (swi ** 2)
-                result = f"{round(k,4)} Darcy ({round(k*1000,2)} mD)"
+                result = round(k, 6)
 
-        # -------------------------
+                # GRAPH: k vs porosity
+                phi_range = np.linspace(0.05, 0.35, 20)
+
+                for p in phi_range:
+                    k_val = C * (p ** 4) / (swi ** 2)
+                    x_values.append(round(p, 3))
+                    k_values.append(round(k_val, 6))
+
+        # =========================
         # DARCY METHOD
-        # -------------------------
+        # =========================
         elif method == "darcy":
             d = float(request.POST.get("diameter"))
             L = float(request.POST.get("length"))
@@ -285,13 +296,21 @@ def perm_view(request):
 
             A = (math.pi * d**2) / 4
 
-            if dP == 0:
-                result = "Pressure drop cannot be zero"
-            else:
+            if dP != 0:
                 k = (Q * mu * L) / (A * dP)
-                result = f"{round(k,5)} Darcy ({round(k*1000,2)} mD)"
+                result = round(k, 6)
+
+                # GRAPH: k vs pressure drop
+                dp_range = np.linspace(dP * 0.5, dP * 2, 20)
+
+                for dp in dp_range:
+                    k_val = (Q * mu * L) / (A * dp)
+                    x_values.append(round(dp, 3))
+                    k_values.append(round(k_val, 6))
 
     return render(request, "calculate/permeability.html", {
         "result": result,
-        "method": method
+        "method": method,
+        "x_values": x_values,
+        "k_values": k_values
     })
