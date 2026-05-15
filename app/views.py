@@ -167,26 +167,54 @@ def analysis_home(request):
 
 
 
-
+import numpy as np
 from django.shortcuts import render
 
 def porosity_view(request):
     result = None
+    bulk_values = []
+    porosity_values = []
 
     if request.method == "POST":
-        rho_ma = float(request.POST.get("rho_ma"))
-        rho_f = float(request.POST.get("rho_f"))
-        rho_b = float(request.POST.get("rho_b"))
+        try:
+            rho_ma = float(request.POST.get("rho_ma"))
+            rho_f = float(request.POST.get("rho_f"))
+            rho_b = float(request.POST.get("rho_b"))
 
-        phi = (rho_ma - rho_b) / (rho_ma - rho_f)
+            # Prevent division error
+            if rho_ma == rho_f:
+                result = "Invalid input (ρma cannot equal ρf)"
+            else:
+                # Main porosity calculation
+                phi = (rho_ma - rho_b) / (rho_ma - rho_f)
+                result = round(phi, 4)
 
-        result = round(phi, 4)
+                # -------------------------
+                # GRAPH DATA
+                # -------------------------
+                bulk_range = np.linspace(rho_b - 0.3, rho_b + 0.3, 15)
 
-    return render(request, "calculate/porosity.html", {"result": result})
+                for b in bulk_range:
+                    p = (rho_ma - b) / (rho_ma - rho_f)
+                    bulk_values.append(round(b, 3))
+                    porosity_values.append(round(p, 4))
 
+        except:
+            result = "Invalid input values"
+
+    return render(request, "calculate/porosity.html", {
+        "result": result,
+        "bulk_values": bulk_values,
+        "porosity_values": porosity_values
+    })
+
+
+import numpy as np
 
 def sw_view(request):
     result = None
+    phi_values = []
+    sw_values = []
 
     if request.method == "POST":
         a = float(request.POST.get("a"))
@@ -196,11 +224,29 @@ def sw_view(request):
         rt = float(request.POST.get("rt"))
         phi = float(request.POST.get("phi"))
 
+        # main result
         sw = ((a * rw) / ((phi ** m) * rt)) ** (1 / n)
-
         result = round(sw, 4)
 
-    return render(request, "calculate/sw.html", {"result": result})
+        # -----------------------------
+        # GRAPH DATA: Sw vs Porosity
+        # -----------------------------
+        phi_range = np.linspace(0.05, 0.35, 20)
+
+        for p in phi_range:
+            try:
+                sw_g = ((a * rw) / ((p ** m) * rt)) ** (1 / n)
+            except:
+                sw_g = 0
+
+            phi_values.append(round(p, 3))
+            sw_values.append(round(sw_g, 4))
+
+    return render(request, "calculate/sw.html", {
+        "result": result,
+        "phi_values": phi_values,
+        "sw_values": sw_values
+    })
 
 
 import math

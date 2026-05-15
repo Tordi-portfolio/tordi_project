@@ -2,129 +2,161 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Permeability Analysis</title>
 
 <style>
-/* GLOBAL BACKGROUND (match your system) */
 body {
     margin: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(90deg, #0a0f1f, #1e3c72, #2a5298);
+    background: #0b0f1a;
     color: white;
 }
 
-/* PAGE CONTAINER */
+/* HEADER TITLE */
+h1 {
+    text-align: center;
+    font-size: 22px;
+    margin: 30px 10px;
+    color: #e2e8f0;
+}
+
+/* MAIN CONTAINER */
 .container {
     max-width: 1100px;
-    margin: 40px auto;
+    margin: auto;
     padding: 20px;
 }
 
-/* TITLE */
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 25px;
-}
-
-/* GRID LAYOUT */
+/* GRID */
 .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
 }
 
-/* CARD STYLE (same vibe as your analysis page) */
+/* CARD STYLE */
 .card {
-    background: rgba(255, 255, 255, 0.08);
+    background: #111827;
     padding: 25px;
     border-radius: 12px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    border: 1px solid #1f2937;
     transition: 0.3s;
 }
 
 .card:hover {
-    transform: scale(1.02);
+    transform: translateY(-3px);
 }
 
-/* SECTION HEADERS */
+/* CARD HEADER */
 .card h2 {
     margin-bottom: 15px;
-    color: #00c6ff;
+    color: #00d4ff;
+    font-size: 18px;
 }
 
-/* INPUT STYLE */
+/* INPUT */
 input {
     width: 100%;
     padding: 10px;
     margin-bottom: 12px;
     border-radius: 6px;
-    border: none;
-    outline: none;
-    background: #0f1a33;
+    border: 1px solid #334155;
+    background: #0f172a;
     color: white;
+    outline: none;
 }
 
-/* BUTTON STYLE (match your system) */
+/* BUTTON */
 button {
     width: 100%;
-    padding: 10px;
-    background: #00c6ff;
+    padding: 12px;
+    background: #00d4ff;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    color: black;
-    transition: 0.3s;
+    color: #000;
+    transition: 0.2s;
 }
 
 button:hover {
-    background: #0099cc;
+    background: #0ea5e9;
 }
 
-/* RESULT BOX */
+/* RESULT */
 .result {
     margin-top: 20px;
     padding: 15px;
-    background: rgba(0, 198, 255, 0.1);
-    border-left: 5px solid #00c6ff;
-    border-radius: 6px;
+    background: #0f172a;
+    border-left: 4px solid #00d4ff;
+    border-radius: 8px;
+}
+
+/* INFO SECTION */
+.result-note {
+    margin-top: 30px;
+    padding: 20px;
+    background: #0f172a;
+    border-radius: 12px;
+    border: 1px solid #1f2937;
+}
+
+.result-note h3 {
+    color: #00d4ff;
+}
+
+.result-note h4 {
+    margin-top: 15px;
+    color: #e2e8f0;
+}
+
+.result-note p, 
+.result-note li {
+    color: #cbd5e1;
+}
+
+/* LINK */
+a {
+    display: inline-block;
+    margin-top: 20px;
+    color: #00d4ff;
+    text-decoration: none;
 }
 
 /* RESPONSIVE */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
     .grid {
         grid-template-columns: 1fr;
     }
+
+    h1 {
+        font-size: 20px;
+    }
 }
-</style>
 
-<style>
-    .result-note{
-        margin-top:20px;
-        padding:15px;
-        background:#10182f;
-        border-left:5px solid #00d4ff;
-        border-radius:8px;
-        color:#e6e6e6;
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
     }
 
-    .result-note h3{
-        color:#00d4ff;
+    h1 {
+        font-size: 18px;
     }
-    .result-note h4{
-        margin-top:10px;
-        color:#ffffff;
+
+    .card {
+        padding: 18px;
     }
+}
 </style>
 
 </head>
 
 <body>
 
-<div class="container">
+<h1>🛢️ Permeability Calculator (Empirical & Darcy Core Method)</h1>
 
-    <h1> Permeability Calculator using Empirical And Darcy Method</h1>
+<div class="container">
 
     <div class="grid">
 
@@ -138,9 +170,9 @@ button:hover {
 
                 <input type="number" step="any" name="C" placeholder="Constant C" required>
                 <input type="number" step="any" name="phi" placeholder="Porosity (φ)" required>
-                <input type="number" step="any" name="swi" placeholder="Swi" required>
+                <input type="number" step="any" name="swi" placeholder="Sw irreducible (Swi)" required>
 
-                <button type="submit">Calculate</button>
+                <button type="submit">Calculate Permeability</button>
             </form>
         </div>
 
@@ -152,13 +184,13 @@ button:hover {
                 {% csrf_token %}
                 <input type="hidden" name="method" value="darcy">
 
-                <input type="number" step="any" name="diameter" placeholder="Diameter (cm)" required>
-                <input type="number" step="any" name="length" placeholder="Length (cm)" required>
+                <input type="number" step="any" name="diameter" placeholder="Core Diameter (cm)" required>
+                <input type="number" step="any" name="length" placeholder="Core Length (cm)" required>
                 <input type="number" step="any" name="flow_rate" placeholder="Flow Rate (cc/s)" required>
                 <input type="number" step="any" name="viscosity" placeholder="Viscosity (cP)" required>
                 <input type="number" step="any" name="pressure_drop" placeholder="Pressure Drop (atm)" required>
 
-                <button type="submit">Calculate</button>
+                <button type="submit">Calculate Permeability</button>
             </form>
         </div>
 
@@ -170,40 +202,42 @@ button:hover {
     </div>
     {% endif %}
 
+    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
+
 </div>
+
+<!-- INFO SECTION -->
+<div class="container">
 
 <div class="result-note">
     <h3>📘 About Permeability</h3>
     <p>
-        Permeability (k) measures the ability of a rock to transmit fluids through its pore network.
-        It is a key parameter in reservoir productivity analysis.
+        Permeability (k) describes how easily fluids flow through reservoir rock.
+        It is one of the most important parameters in reservoir engineering and production forecasting.
     </p>
 
     <h4>📐 Empirical Formula</h4>
-    <p>
-        k = C × φ⁴ / Sw²
-    </p>
+    <p>k = C × φ⁴ / Sw²</p>
 
     <h4>📐 Darcy Core Flood Formula</h4>
-    <p>
-        k = (Q × μ × L) / (A × ΔP)
-    </p>
+    <p>k = (Q × μ × L) / (A × ΔP)</p>
 
     <h4>📊 Units</h4>
     <ul>
-        <li>k: Darcy or milliDarcy (mD)</li>
+        <li>k: Darcy / mD</li>
         <li>Q: cm³/s</li>
-        <li>μ (viscosity): cP</li>
+        <li>μ: cP</li>
         <li>L: cm</li>
         <li>A: cm²</li>
-        <li>ΔP: atm or bar (be consistent)</li>
+        <li>ΔP: atm or bar</li>
     </ul>
 
-    <h4>⚠️ How to Use</h4>
+    <h4>⚠️ Engineering Note</h4>
     <p>
-        Ensure consistent units before calculation.  
-        Core flood method is used for lab data, while empirical method is used for log-based estimation.
+        Always ensure consistent units before solving. Darcy method is lab-based while empirical method is log-based estimation.
     </p>
+</div>
+
 </div>
 
 </body>

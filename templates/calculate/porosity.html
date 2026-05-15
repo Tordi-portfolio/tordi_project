@@ -2,29 +2,36 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Porosity Calculator</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
             margin: 0;
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             background: #0b0f1a;
             color: white;
         }
 
+        /* HEADER */
         .header {
             padding: 20px;
             text-align: center;
             background: linear-gradient(90deg, #0f172a, #1e3a8a);
-            font-size: 22px;
+            font-size: 20px;
+            font-weight: bold;
         }
 
+        /* MAIN CONTAINER */
         .container {
-            width: 400px;
-            margin: 50px auto;
+            width: 100%;
+            max-width: 750px;
+            margin: 30px auto;
             background: #111827;
             padding: 25px;
-            border-radius: 10px;
+            border-radius: 12px;
             border: 1px solid #1f2937;
         }
 
@@ -42,54 +49,82 @@
             background: #0f172a;
             border: 1px solid #334155;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
+            outline: none;
         }
 
         button {
-            margin-top: 20px;
             width: 100%;
-            padding: 10px;
+            margin-top: 20px;
+            padding: 12px;
             background: #3b82f6;
             border: none;
             color: white;
-            border-radius: 5px;
+            border-radius: 6px;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
         }
 
         button:hover {
             background: #2563eb;
         }
 
+        /* RESULT BOX */
         .result {
             margin-top: 20px;
             padding: 15px;
             background: #0f172a;
-            border-left: 3px solid #3b82f6;
+            border-left: 4px solid #3b82f6;
+            border-radius: 6px;
+        }
+
+        /* CHART CONTAINER (IMPORTANT FIX) */
+        .chart-box {
+            margin-top: 30px;
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #1f2937;
+
+            height: 380px;
+            position: relative;
+        }
+
+        .chart-box canvas {
+            width: 100% !important;
+            height: 100% !important;
         }
 
         a {
-            color: #60a5fa;
+            display: inline-block;
+            margin-top: 20px;
+            color: #00d4ff;
             text-decoration: none;
-            font-size: 12px;
-        }
-    </style>
-
-    <style>
-        .result-note{
-            margin-top:20px;
-            padding:15px;
-            background:#10182f;
-            border-left:5px solid #00d4ff;
-            border-radius:8px;
-            color:#e6e6e6;
         }
 
-        .result-note h3{
-            color:#00d4ff;
+        /* ===== TABLET ===== */
+        @media (max-width: 1024px) {
+            .container {
+                max-width: 90%;
+            }
         }
-        .result-note h4{
-            margin-top:10px;
-            color:#ffffff;
+
+        /* ===== MOBILE ===== */
+        @media (max-width: 600px) {
+            .container {
+                margin: 15px;
+                padding: 15px;
+            }
+
+            .header {
+                font-size: 16px;
+                padding: 15px;
+            }
+
+            .chart-box {
+                height: 300px;
+            }
         }
     </style>
 </head>
@@ -104,13 +139,13 @@
         {% csrf_token %}
 
         <label>Matrix Density (ρma)</label>
-        <input type="number" name="rho_ma" step="any">
+        <input type="number" name="rho_ma" step="any" required>
 
         <label>Fluid Density (ρf)</label>
-        <input type="number" name="rho_f" step="any">
+        <input type="number" name="rho_f" step="any" required>
 
         <label>Bulk Density (ρb)</label>
-        <input type="number" name="rho_b" step="any">
+        <input type="number" name="rho_b" step="any" required>
 
         <button type="submit">Calculate Porosity</button>
     </form>
@@ -122,37 +157,97 @@
     </div>
     {% endif %}
 
-    <br>
+    <!-- CHART -->
+    <div class="chart-box">
+        <canvas id="porosityChart"></canvas>
+    </div>
+
     <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
 
 </div>
 
-<div class="result-note">
-    <h3>📘 About Porosity</h3>
-    <p>
-        Porosity (φ) is the fraction of void space in a rock that can store fluids such as oil, gas, or water.
-        It is a key reservoir quality indicator in petrophysics.
-    </p>
+<!-- SAFE JSON DATA -->
+{{ bulk_values|json_script:"bulk-data" }}
+{{ porosity_values|json_script:"poro-data" }}
 
-    <h4>📐 Formula (Density Log Method)</h4>
-    <p>
-        φ = (ρma − ρb) / (ρma − ρf)
-    </p>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
-    <h4>📊 Units</h4>
-    <ul>
-        <li>ρma (Matrix density): g/cm³</li>
-        <li>ρb (Bulk density): g/cm³</li>
-        <li>ρf (Fluid density): g/cm³</li>
-        <li>Porosity is dimensionless (or fraction / %)</li>
-    </ul>
+    const bulkValues = JSON.parse(document.getElementById("bulk-data")?.textContent || "[]");
+    const porosityValues = JSON.parse(document.getElementById("poro-data")?.textContent || "[]");
 
-    <h4>⚠️ How to Use</h4>
-    <p>
-        Enter all density values in <b>g/cm³</b>.  
-        If you are using percentage porosity, divide the final result by 100.
-    </p>
-</div>
+    const canvas = document.getElementById("porosityChart");
+
+    if (bulkValues.length > 0 && porosityValues.length > 0 && canvas) {
+
+        new Chart(canvas, {
+            type: "line",
+            data: {
+                labels: bulkValues,
+                datasets: [{
+                    label: "Porosity vs Bulk Density",
+                    data: porosityValues,
+                    borderColor: "#3b82f6",
+                    backgroundColor: "rgba(59,130,246,0.1)",
+                    borderWidth: 3,
+                    tension: 0.35,
+                    fill: true,
+                    pointRadius: 4,
+                    pointBackgroundColor: "#3b82f6"
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#e2e8f0"
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: "Porosity vs Bulk Density Relationship",
+                        color: "#e2e8f0"
+                    }
+                },
+
+                scales: {
+                    x: {
+                        grid: {
+                            color: "rgba(255,255,255,0.05)"
+                        },
+                        ticks: {
+                            color: "#cbd5e1"
+                        },
+                        title: {
+                            display: true,
+                            text: "Bulk Density (ρb)",
+                            color: "#cbd5e1"
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: "rgba(255,255,255,0.05)"
+                        },
+                        ticks: {
+                            color: "#cbd5e1"
+                        },
+                        title: {
+                            display: true,
+                            text: "Porosity (φ)",
+                            color: "#cbd5e1"
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+});
+</script>
 
 </body>
 </html>
