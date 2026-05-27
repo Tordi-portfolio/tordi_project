@@ -1,0 +1,323 @@
+{% extends "base.html" %}
+
+{% block title %}Porosity Formulas{% endblock %}
+
+{% block content %}
+
+<style>
+body{
+    background: linear-gradient(135deg,#081120,#0f2747,#07111f);
+    font-family: Arial, sans-serif;
+    color: white;
+}
+
+.page-container{
+    width: 95%;
+    margin: 30px auto;
+}
+
+.header{
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.header h1{
+    font-size: 42px;
+    color: #00d9ff;
+    margin-bottom: 10px;
+}
+
+.header p{
+    color: #cfcfcf;
+    font-size: 18px;
+}
+
+.formula-card{
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 18px;
+    padding: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    transition: 0.3s;
+}
+
+.formula-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 0 25px rgba(0,217,255,0.3);
+}
+
+.formula-title{
+    font-size: 28px;
+    color: #00d9ff;
+    margin-bottom: 15px;
+}
+
+.formula-box{
+    background: #061321;
+    border-left: 5px solid #00d9ff;
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 10px;
+    overflow-x: auto;
+}
+
+.formula{
+    font-size: 30px;
+    color: #00ff9d;
+    text-align: center;
+}
+
+.description{
+    margin-top: 15px;
+    line-height: 1.8;
+    color: #d8d8d8;
+}
+
+.variable-list{
+    margin-top: 20px;
+}
+
+.variable-list li{
+    margin-bottom: 10px;
+    line-height: 1.7;
+}
+
+.footer-note{
+    text-align: center;
+    margin-top: 50px;
+    color: #9f9f9f;
+    font-size: 16px;
+}
+</style>
+
+<div class="page-container">
+
+    <div class="header">
+        <h1>POROSITY FORMULAS</h1>
+        <p>Petrophysical Analysis and Reservoir Characterization</p>
+    </div>
+
+    <!-- Formula 1 -->
+    <div class="formula-card">
+        <div class="formula-title">1. Basic Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φ = Vp / Vb
+            </div>
+        </div>
+
+        <div class="description">
+            This is the fundamental definition of porosity. It represents
+            the ratio of pore volume to bulk volume.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φ</strong> = Porosity</li>
+            <li><strong>Vp</strong> = Pore Volume</li>
+            <li><strong>Vb</strong> = Bulk Volume</li>
+        </ul>
+    </div>
+
+    <!-- Formula 2 -->
+    <div class="formula-card">
+        <div class="formula-title">2. Percentage Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φ(%) = (Vp / Vb) × 100
+            </div>
+        </div>
+
+        <div class="description">
+            Used to express porosity as a percentage value.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φ(%)</strong> = Percentage Porosity</li>
+            <li><strong>Vp</strong> = Pore Volume</li>
+            <li><strong>Vb</strong> = Bulk Volume</li>
+        </ul>
+    </div>
+
+    <!-- Formula 3 -->
+    <div class="formula-card">
+        <div class="formula-title">3. Density Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φ = (ρma - ρb) / (ρma - ρf)
+            </div>
+        </div>
+
+        <div class="description">
+            This formula is widely used in petrophysics for calculating
+            porosity from density logs.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>ρma</strong> = Matrix Density</li>
+            <li><strong>ρb</strong> = Bulk Density</li>
+            <li><strong>ρf</strong> = Fluid Density</li>
+        </ul>
+    </div>
+
+    <!-- Formula 4 -->
+    <div class="formula-card">
+        <div class="formula-title">4. Sonic Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φ = (Δtlog - Δtma) / (Δtf - Δtma)
+            </div>
+        </div>
+
+        <div class="description">
+            Used with sonic logs to estimate formation porosity.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>Δtlog</strong> = Formation Transit Time</li>
+            <li><strong>Δtma</strong> = Matrix Transit Time</li>
+            <li><strong>Δtf</strong> = Fluid Transit Time</li>
+        </ul>
+    </div>
+
+    <!-- Formula 5 -->
+    <div class="formula-card">
+        <div class="formula-title">5. Effective Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φe = Vconnected pores / Vb
+            </div>
+        </div>
+
+        <div class="description">
+            Effective porosity includes only interconnected pores
+            that contribute to fluid flow.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φe</strong> = Effective Porosity</li>
+            <li><strong>Vconnected pores</strong> = Connected Pore Volume</li>
+            <li><strong>Vb</strong> = Bulk Volume</li>
+        </ul>
+    </div>
+
+    <!-- Formula 6 -->
+    <div class="formula-card">
+        <div class="formula-title">6. Total Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φt = Vtotal pores / Vb
+            </div>
+        </div>
+
+        <div class="description">
+            Total porosity includes both connected and isolated pores.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φt</strong> = Total Porosity</li>
+            <li><strong>Vtotal pores</strong> = Total Pore Volume</li>
+            <li><strong>Vb</strong> = Bulk Volume</li>
+        </ul>
+    </div>
+
+    <!-- Formula 7 -->
+    <div class="formula-card">
+        <div class="formula-title">7. Secondary Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φs = φt - φp
+            </div>
+        </div>
+
+        <div class="description">
+            Secondary porosity develops after rock formation due
+            to fractures or dissolution.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φs</strong> = Secondary Porosity</li>
+            <li><strong>φt</strong> = Total Porosity</li>
+            <li><strong>φp</strong> = Primary Porosity</li>
+        </ul>
+    </div>
+
+    <!-- Formula 8 -->
+    <div class="formula-card">
+        <div class="formula-title">8. Average Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φavg = Σ(φi hi) / Σhi
+            </div>
+        </div>
+
+        <div class="description">
+            Used to calculate average porosity across multiple layers.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φavg</strong> = Average Porosity</li>
+            <li><strong>φi</strong> = Layer Porosity</li>
+            <li><strong>hi</strong> = Layer Thickness</li>
+        </ul>
+    </div>
+
+    <!-- Formula 9 -->
+    <div class="formula-card">
+        <div class="formula-title">9. Dual Porosity Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φt = φm + φf
+            </div>
+        </div>
+
+        <div class="description">
+            Used in fractured carbonate reservoirs where matrix and
+            fracture porosity both contribute.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φt</strong> = Total Porosity</li>
+            <li><strong>φm</strong> = Matrix Porosity</li>
+            <li><strong>φf</strong> = Fracture Porosity</li>
+        </ul>
+    </div>
+
+    <!-- Formula 10 -->
+    <div class="formula-card">
+        <div class="formula-title">10. Porosity Compaction Formula</div>
+
+        <div class="formula-box">
+            <div class="formula">
+                φ = φ₀e⁻ᶜᶻ
+            </div>
+        </div>
+
+        <div class="description">
+            Shows how porosity decreases with increasing burial depth
+            due to compaction.
+        </div>
+
+        <ul class="variable-list">
+            <li><strong>φ₀</strong> = Initial Porosity</li>
+            <li><strong>c</strong> = Compaction Constant</li>
+            <li><strong>z</strong> = Depth</li>
+        </ul>
+    </div>
+
+    <div class="footer-note">
+        Developed for Petrophysical Analysis and Reservoir Evaluation
+    </div>
+
+</div>
+
+{% endblock %}

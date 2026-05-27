@@ -2,159 +2,106 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Water Saturation</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #0b0f1a;
             color: white;
         }
 
-        /* HEADER */
         .header {
             padding: 20px;
             text-align: center;
             background: linear-gradient(90deg, #0f172a, #0ea5e9);
-            font-size: 20px;
-            font-weight: bold;
         }
 
-        /* MAIN CONTAINER */
         .container {
-            width: 100%;
-            max-width: 750px;
-            margin: 30px auto;
+            width: 420px;
+            margin: 50px auto;
             background: #111827;
             padding: 25px;
-            border-radius: 12px;
-            border: 1px solid #1f2937;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #cbd5e1;
+            border-radius: 10px;
         }
 
         input {
             width: 100%;
             padding: 10px;
-            margin-top: 5px;
+            margin-top: 8px;
             background: #0f172a;
             border: 1px solid #334155;
             color: white;
-            border-radius: 6px;
-            outline: none;
+        }
+
+        label {
+            margin-top: 10px;
+            display: block;
+            color: #cbd5e1;
+            font-size: 13px;
         }
 
         button {
             width: 100%;
             margin-top: 20px;
-            padding: 12px;
+            padding: 10px;
             background: #0ea5e9;
             border: none;
             color: white;
             cursor: pointer;
-            border-radius: 6px;
-            font-weight: bold;
-            transition: 0.2s;
         }
 
-        button:hover {
-            background: #0284c7;
-        }
-
-        /* RESULT BOX */
         .result {
             margin-top: 20px;
             padding: 15px;
             background: #0f172a;
-            border-left: 4px solid #0ea5e9;
-            border-radius: 6px;
-        }
-
-        /* CHART BOX (IMPORTANT FIX) */
-        .chart-box {
-            margin-top: 30px;
-            background: #0f172a;
-            padding: 20px;
-            border-radius: 12px;
-            border: 1px solid #1f2937;
-
-            height: 380px;
-            position: relative;
-        }
-
-        .chart-box canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            color: #00d4ff;
-            text-decoration: none;
-        }
-
-        /* ===== TABLET ===== */
-        @media (max-width: 1024px) {
-            .container {
-                max-width: 90%;
-            }
-        }
-
-        /* ===== MOBILE ===== */
-        @media (max-width: 600px) {
-            .container {
-                margin: 15px;
-                padding: 15px;
-            }
-
-            .header {
-                font-size: 16px;
-                padding: 15px;
-            }
-
-            .chart-box {
-                height: 300px;
-            }
+            border-left: 3px solid #0ea5e9;
         }
     </style>
+
+    <style>
+.result-note{
+    margin-top:20px;
+    padding:15px;
+    background:#10182f;
+    border-left:5px solid #00d4ff;
+    border-radius:8px;
+    color:#e6e6e6;
+}
+
+.result-note h3{
+    color:#00d4ff;
+}
+.result-note h4{
+    margin-top:10px;
+    color:#ffffff;
+}
+</style>
 </head>
 
 <body>
 
-<div class="header">💧 Water Saturation (Archie Equation)</div>
+<div class="header">💧 Water Saturation Calculator (Archie Equation)</div>
 
 <div class="container">
 
     <form method="POST">
         {% csrf_token %}
 
-        <label>Rw</label>
-        <input type="number" step="any" name="rw" required>
+        <label>Resistivity of Water (Rw)</label>
+        <input type="number" name="rw" placeholder="(Rw)">
 
-        <label>Rt</label>
-        <input type="number" step="any" name="rt" required>
+        <label>True Resistivity (Rt)</label>
+        <input type="number" name="rt" placeholder="(Rt)">
 
-        <label>Porosity (φ)</label>
-        <input type="number" step="any" name="phi" required>
+        <label>Porosity (Φ)</label>
+        <input type="number" name="phi" placeholder="(Φ)">
 
-        <label>a</label>
-        <input type="number" step="any" name="a" required>
-
-        <label>m</label>
-        <input type="number" step="any" name="m" required>
-
-        <label>n</label>
-        <input type="number" step="any" name="n" required>
+        <label>Constants (a, m, n)</label>
+        <input type="number" name="a" placeholder="a">
+        <input type="number" name="m" placeholder="m">
+        <input type="number" name="n" placeholder="n">
 
         <button type="submit">Calculate Sw</button>
     </form>
@@ -166,97 +113,35 @@
     </div>
     {% endif %}
 
-    <!-- BEAUTIFUL GRAPH -->
-    <div class="chart-box">
-        <canvas id="swChart"></canvas>
-    </div>
-
-    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
-
 </div>
 
-<!-- SAFE JSON DATA -->
-{{ phi_values|json_script:"phi-data" }}
-{{ sw_values|json_script:"sw-data" }}
+<div class="result-note">
+    <h3>📘 About Water Saturation</h3>
+    <p>
+        Water saturation (Sw) is the fraction of pore space in a reservoir rock that is filled with water.
+        It is critical for estimating hydrocarbon volume.
+    </p>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
+    <h4>📐 Archie’s Equation</h4>
+    <p>
+        Sw = [ (a * Rw) / (φ^m * Rt) ]^(1/n)
+    </p>
 
-    const phiValues = JSON.parse(document.getElementById("phi-data")?.textContent || "[]");
-    const swValues = JSON.parse(document.getElementById("sw-data")?.textContent || "[]");
+    <h4>📊 Units</h4>
+    <ul>
+        <li>Rw (Formation water resistivity): ohm·m</li>
+        <li>Rt (True formation resistivity): ohm·m</li>
+        <li>φ (Porosity): fraction (NOT %)</li>
+        <li>a, m, n: dimensionless constants</li>
+    </ul>
 
-    const canvas = document.getElementById("swChart");
-
-    if (phiValues.length > 0 && swValues.length > 0 && canvas) {
-
-        new Chart(canvas, {
-            type: "line",
-            data: {
-                labels: phiValues,
-                datasets: [{
-                    label: "Archie Equation Analysis",
-                    data: swValues,
-                    borderColor: "#00d4ff",
-                    backgroundColor: "rgba(0,212,255,0.08)",
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.35,
-                    pointRadius: 4,
-                    pointBackgroundColor: "#00d4ff"
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: "#e2e8f0"
-                        }
-                    },
-                    title: {
-                        display: true,
-                        text: "Water Saturation vs Porosity Relationship (Archie’s Law)",
-                        color: "#e2e8f0"
-                    }
-                },
-
-                scales: {
-                    x: {
-                        grid: {
-                            color: "rgba(255,255,255,0.05)"
-                        },
-                        ticks: {
-                            color: "#cbd5e1"
-                        },
-                        title: {
-                            display: true,
-                            text: "Porosity (φ)",
-                            color: "#cbd5e1"
-                        }
-                    },
-                    y: {
-                        grid: {
-                            color: "rgba(255,255,255,0.05)"
-                        },
-                        ticks: {
-                            color: "#cbd5e1"
-                        },
-                        title: {
-                            display: true,
-                            text: "Water Saturation (Sw)",
-                            color: "#cbd5e1"
-                        }
-                    }
-                }
-            }
-        });
-
-    }
-
-});
-</script>
+    <h4>⚠️ How to Use</h4>
+    <p>
+        Convert porosity from % to fraction (e.g. 20% → 0.20).  
+        Ensure resistivity values are in <b>ohm·m</b>.  
+        Typical values: a = 1, m = 2, n = 2.
+    </p>
+</div>
 
 </body>
 </html>
