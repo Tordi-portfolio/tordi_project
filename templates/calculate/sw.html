@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -58,26 +60,99 @@
             background: #0f172a;
             border-left: 3px solid #0ea5e9;
         }
+
+        .result-note{
+            margin-top:20px;
+            padding:15px;
+            background:#10182f;
+            border-left:5px solid #00d4ff;
+            border-radius:8px;
+            color:#e6e6e6;
+        }
+
+        .result-note h3{
+            color:#00d4ff;
+        }
+
+        .result-note h4{
+            margin-top:10px;
+            color:#ffffff;
+        }
+
+        /* NEW RELATIONSHIP SECTION */
+        .relationship-box{
+            margin-top:20px;
+            padding:15px;
+            background:#0f172a;
+            border-left:5px solid #38bdf8;
+            border-radius:8px;
+        }
+
+        .relationship-box h3{
+            color:#38bdf8;
+            margin-bottom:10px;
+        }
+
+        .relation{
+            background:#0b1220;
+            padding:10px;
+            border-radius:6px;
+            text-align:center;
+            font-weight:bold;
+            color:#00d4ff;
+            margin:10px 0;
+        }
+
+        .relationship-box p{
+            font-size:14px;
+            color:#cbd5e1;
+            line-height:1.6;
+        }
+
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 600px){
+            .container{
+                width: 90%;
+                margin: 20px auto;
+            }
+        }
+
+        /* Diagram section */
+        .diagram-section{
+            margin-top:50px;
+            text-align:center;
+        }
+
+        .diagram-section img{
+            width:100%;
+            max-width:1000px;
+            border-radius:18px;
+            border:2px solid #1e293b;
+            margin-top:20px;
+        }
+
+            .card {
+        background: rgba(255,255,255,0.05);
+        padding: 18px;
+        margin-bottom: 15px;
+        border-radius: 10px;
+        border-left: 4px solid #00b4d8;
+    }
+
+    .formula {
+        font-family: monospace;
+        background: #0a0f1a;
+        padding: 10px;
+        border-radius: 6px;
+        margin: 10px 0;
+        overflow-x: auto;
+    }
+
+    .label {
+        color: #00d4ff;
+        font-weight: bold;
+    }
     </style>
-
-    <style>
-.result-note{
-    margin-top:20px;
-    padding:15px;
-    background:#10182f;
-    border-left:5px solid #00d4ff;
-    border-radius:8px;
-    color:#e6e6e6;
-}
-
-.result-note h3{
-    color:#00d4ff;
-}
-.result-note h4{
-    margin-top:10px;
-    color:#ffffff;
-}
-</style>
 </head>
 
 <body>
@@ -115,6 +190,7 @@
 
 </div>
 
+<!-- ABOUT SECTION -->
 <div class="result-note">
     <h3>📘 About Water Saturation</h3>
     <p>
@@ -123,9 +199,7 @@
     </p>
 
     <h4>📐 Archie’s Equation</h4>
-    <p>
-        Sw = [ (a * Rw) / (φ^m * Rt) ]^(1/n)
-    </p>
+    <p>Sw = [ (a * Rw) / (φ^m * Rt) ]^(1/n)</p>
 
     <h4>📊 Units</h4>
     <ul>
@@ -142,6 +216,166 @@
         Typical values: a = 1, m = 2, n = 2.
     </p>
 </div>
+
+<!-- DIAGRAM -->
+
+    <div class="diagram-section">
+
+        <h2 style="color:#38bdf8;">
+            Graphical Density Relationship Diagram
+        </h2>
+
+        <img src="{% static 'img/sw.png' %}"
+             alt="Density Relationship Diagram">
+
+    </div>
+
+<!-- NEW RELATIONSHIP SECTION -->
+<div class="relationship-box">
+
+    <h3>📊 Relationships Between Parameters</h3>
+
+    <div class="relation">Rt ↑ → Sw ↓</div>
+    <p>
+        As true formation resistivity increases, water saturation decreases.
+        High resistivity usually indicates hydrocarbon presence because oil and gas resist electrical flow.
+    </p>
+
+    <div class="relation">φ ↑ → Sw ↓</div>
+    <p>
+        Higher porosity means more pore space available for hydrocarbons,
+        leading to lower water saturation in most reservoir conditions.
+    </p>
+
+    <div class="relation">Rw ↑ → Sw ↑</div>
+    <p>
+        Higher formation water resistivity increases calculated water saturation.
+        This often occurs in fresh water systems with lower ionic content.
+    </p>
+
+    <div class="relation">m ↑ → Sw ↓</div>
+    <p>
+        Increasing cementation exponent affects pore geometry,
+        making the rock matrix more resistive and influencing saturation estimates.
+    </p>
+
+    <div class="relation">n controls Sw sensitivity</div>
+    <p>
+        The saturation exponent controls how strongly resistivity responds to changes in water saturation.
+    </p>
+
+    <div class="relation">a ↑ → Sw ↑</div>
+    <p>
+        Tortuosity factor represents pore path complexity.
+        More complex pathways increase resistance and affect saturation calculations.
+    </p>
+
+</div>
+
+<br>
+
+<!-- ARCHIE -->
+    <div class="card">
+        <div class="label">Archie’s Equation</div>
+
+        <div class="formula">
+            Sw = [(a × Rw) / (φ^m × Rt)]^(1/n)
+        </div>
+
+        <p>
+            Used to calculate water saturation in clean sandstone reservoirs with no shale content.
+        </p>
+
+        <p><b>Parameters:</b> Sw, a, Rw, φ, m, Rt, n</p>
+    </div>
+
+    <!-- FORMATION FACTOR -->
+    <div class="card">
+        <div class="label">Formation Factor</div>
+
+        <div class="formula">
+            F = Rt / Rw = a / φ^m
+        </div>
+
+        <p>
+            Used to relate rock resistivity to porosity in clean formations.
+        </p>
+
+        <p><b>Parameters:</b> F, Rt, Rw, a, φ, m</p>
+    </div>
+
+    <div class="card">
+        <div class="label">Effective Water Saturation</div>
+
+        <div class="formula">
+            𝑆𝑤 + 𝑆ℎ = 1 
+        </div>
+
+        <p>
+            Hydrocarbon-bearing zones
+        </p>
+
+    </div>
+
+    <!-- RESISTIVITY INDEX -->
+    <div class="card">
+        <div class="label">Resistivity Index</div>
+
+        <div class="formula">
+            Sw = (R0 / Rt)^(1/n)
+        </div>
+
+        <p>
+            Used to estimate water saturation from resistivity ratio of water-saturated and hydrocarbon zones.
+        </p>
+
+        <p><b>Parameters:</b> Sw, R0, Rt, n</p>
+    </div>
+
+    <!-- SIMANDOUX -->
+    <div class="card">
+        <div class="label">Simandoux Model</div>
+
+        <div class="formula">
+            1/Rt = (Vsh / Rsh) + (Sw^n / (a × Rw × φ^m))
+        </div>
+
+        <p>
+            Used in shaly sand formations to account for shale conductivity.
+        </p>
+
+        <p><b>Parameters:</b> Rt, Vsh, Rsh, Sw, a, Rw, φ, m, n</p>
+    </div>
+
+    <!-- INDONESIA -->
+    <div class="card">
+        <div class="label">Indonesia Equation</div>
+
+        <div class="formula">
+            Sw = [ (Vsh / Rsh)^(1/2) + (φ^m / (a × Rw × Rt))^(1/2) ]^2
+        </div>
+
+        <p>
+            Used for water saturation estimation in complex shaly sand reservoirs.
+        </p>
+
+        <p><b>Parameters:</b> Sw, Vsh, Rsh, φ, m, a, Rw, Rt</p>
+    </div>
+
+     <!-- WAXMAN SMITS -->
+    <div class="card">
+        <div class="label">Waxman–Smits Model</div>
+
+        <div class="formula">
+            Sw = [F (Rw + BQv) / Rt]^(1/n)
+        </div>
+
+        <p>
+            Used when clay conductivity significantly affects formation resistivity.
+        </p>
+
+        <p><b>Parameters:</b> Sw, F, Rw, B, Qv, Rt, n</p>
+    </div>
 
 </body>
 </html>
