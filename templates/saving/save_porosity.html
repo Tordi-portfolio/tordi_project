@@ -1,0 +1,811 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Porosity Calculator</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b0f1a;
+            color: white;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, #0f172a, #1e3a8a);
+            font-size: 22px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: #111827;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0f172a;
+            border-left: 3px solid #3b82f6;
+        }
+
+        a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        /* ===================================== */
+        /* RESULT NOTE */
+        /* ===================================== */
+
+        .result-note{
+            margin-top:20px;
+            padding:15px;
+            background:#10182f;
+            border-left:5px solid #00d4ff;
+            border-radius:8px;
+            color:#e6e6e6;
+        }
+
+        .result-note h3{
+            color:#00d4ff;
+        }
+
+        .result-note h4{
+            margin-top:10px;
+            color:#ffffff;
+        }
+
+        /* ===================================== */
+        /* RELATIONSHIP SECTION */
+        /* ===================================== */
+
+        .relationship-wrapper{
+            width:90%;
+            margin:40px auto;
+        }
+
+        .relationship-container{
+            max-width:1200px;
+            margin:auto;
+            padding:20px;
+            color:white;
+            font-family:Arial, sans-serif;
+            background:#111827;
+            border-radius:18px;
+            border:1px solid #1e293b;
+        }
+
+        .page-title{
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .page-title h1{
+            font-size:42px;
+            color:#38bdf8;
+            margin-bottom:10px;
+        }
+
+        .page-title p{
+            color:#cbd5e1;
+            font-size:18px;
+        }
+
+        .info-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(350px,1fr));
+            gap:25px;
+        }
+
+        .info-card{
+            background:#0f172a;
+            border:1px solid #1e293b;
+            border-radius:18px;
+            padding:25px;
+            transition:0.3s ease;
+        }
+
+        .info-card:hover{
+            transform:translateY(-5px);
+            border-color:#38bdf8;
+        }
+
+        .info-card h2{
+            color:#38bdf8;
+            margin-bottom:15px;
+            font-size:26px;
+        }
+
+        .info-card h3{
+            color:#facc15;
+            margin-top:20px;
+            margin-bottom:10px;
+        }
+
+        .info-card p{
+            color:#d1d5db;
+            line-height:1.8;
+        }
+
+        .effect-box{
+            background:#1e293b;
+            padding:15px;
+            border-radius:12px;
+            margin-top:15px;
+        }
+
+        .effect-box ul{
+            padding-left:20px;
+        }
+
+        .effect-box li{
+            margin-bottom:10px;
+            color:#e5e7eb;
+        }
+
+        .formula-box{
+            background:#0f172a;
+            border:1px solid #334155;
+            padding:25px;
+            border-radius:16px;
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .formula-box h2{
+            color:#38bdf8;
+            margin-bottom:20px;
+        }
+
+        .formula{
+            font-size:40px;
+            color:#f8fafc;
+            font-weight:bold;
+        }
+
+        .relationship-table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:40px;
+            overflow:hidden;
+            border-radius:16px;
+        }
+
+        .relationship-table th{
+            background:#0284c7;
+            color:white;
+            padding:16px;
+            text-align:left;
+        }
+
+        .relationship-table td{
+            background:#0f172a;
+            padding:16px;
+            border-bottom:1px solid #1e293b;
+            color:#d1d5db;
+        }
+
+        .relationship-table tr:hover td{
+            background:#1e293b;
+        }
+
+        .diagram-section{
+            margin-top:50px;
+            text-align:center;
+        }
+
+        .diagram-section img{
+            width:100%;
+            max-width:1000px;
+            border-radius:18px;
+            border:2px solid #1e293b;
+            margin-top:20px;
+        }
+
+        .highlight{
+            color:#22c55e;
+            font-weight:bold;
+        }
+
+        .warning{
+            color:#ef4444;
+            font-weight:bold;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header">🪨 Porosity Calculator (Density Log Method)</div>
+
+<div class="container">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Matrix Density (ρma)</label>
+        <input type="number" name="rho_ma" step="any">
+
+        <label>Fluid Density (ρf)</label>
+        <input type="number" name="rho_f" step="any">
+
+        <label>Bulk Density (ρb)</label>
+        <input type="number" name="rho_b" step="any">
+
+        <button type="submit">Calculate Porosity</button>
+    </form>
+
+    {% if result %}
+    <div class="result">
+        <strong>Porosity Result:</strong><br>
+        {{ result }}
+    </div>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
+
+</div>
+
+<!-- ===================================== -->
+<!-- RESULT NOTE -->
+<!-- ===================================== -->
+
+<div class="relationship-wrapper">
+
+    <div class="result-note">
+        <h3>📘 About Porosity</h3>
+        <p>
+            Porosity (φ) is the fraction of void space in a rock that can store fluids such as oil, gas, or water.
+            It is a key reservoir quality indicator in petrophysics.
+        </p>
+
+        <h4>📐 Formula (Density Log Method)</h4>
+        <p>
+            φ = (ρma − ρb) / (ρma − ρf)
+        </p>
+
+        <h4>📊 Units</h4>
+        <ul>
+            <li>ρma (Matrix density): g/cm³</li>
+            <li>ρb (Bulk density): g/cm³</li>
+            <li>ρf (Fluid density): g/cm³</li>
+            <li>Porosity is dimensionless (or fraction / %)</li>
+        </ul>
+
+        <h4>⚠️ How to Use</h4>
+        <p>
+            Enter all density values in <b>g/cm³</b>.  
+            If you are using percentage porosity, divide the final result by 100.
+        </p>
+    </div>
+
+</div>
+
+<!-- ===================================== -->
+<!-- FULL RELATIONSHIP CONTENT -->
+<!-- ===================================== -->
+
+<div class="relationship-wrapper">
+
+<div class="relationship-container">
+
+    <!-- PAGE TITLE -->
+
+    <div class="page-title">
+        <h1>Bulk, Matrix and Fluid Density Relationship</h1>
+        <p>
+            Understanding how density variations affect porosity,
+            pore spaces and wellbore behavior in reservoir formations.
+        </p>
+    </div>
+
+    <!-- FORMULA -->
+
+    <div class="formula-box">
+        <h2>Porosity Formula (Density Method)</h2>
+
+        <div class="formula">
+            ϕ = (ρma - ρb) / (ρma - ρf)
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+
+    <div class="info-grid">
+
+        <!-- BULK DENSITY INCREASE -->
+
+        <div class="info-card">
+            <h2>Bulk Density Increases</h2>
+
+            <p>
+                When bulk density increases, the rock becomes more compact
+                and contains less pore space.
+            </p>
+
+            <div class="effect-box">
+                <h3>Effects on Pore Space</h3>
+
+                <ul>
+                    <li>Pore spaces decrease</li>
+                    <li>Porosity reduces</li>
+                    <li>Reservoir becomes tighter</li>
+                    <li>Less hydrocarbon storage</li>
+                </ul>
+            </div>
+
+            <div class="effect-box">
+                <h3>Effects on Wellbore</h3>
+
+                <ul>
+                    <li>Reduced fluid flow</li>
+                    <li>Lower production rate</li>
+                    <li>Permeability decreases</li>
+                    <li>Formation becomes harder</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BULK DENSITY DECREASE -->
+
+        <div class="info-card">
+            <h2>Bulk Density Decreases</h2>
+
+            <p>
+                Lower bulk density usually indicates higher pore volume
+                and better reservoir quality.
+            </p>
+
+            <div class="effect-box">
+                <h3>Effects on Pore Space</h3>
+
+                <ul>
+                    <li>Pore spaces increase</li>
+                    <li>Higher porosity</li>
+                    <li>Better hydrocarbon accumulation</li>
+                    <li>Improved reservoir quality</li>
+                </ul>
+            </div>
+
+            <div class="effect-box">
+                <h3>Effects on Wellbore</h3>
+
+                <ul>
+                    <li>Improved oil and gas flow</li>
+                    <li>Higher permeability</li>
+                    <li>Better production potential</li>
+                    <li>Easier fluid movement</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MATRIX DENSITY -->
+
+        <div class="info-card">
+            <h2>Matrix Density Changes</h2>
+
+            <p>
+                Matrix density represents the density of solid rock grains
+                without pore spaces.
+            </p>
+
+            <div class="effect-box">
+                <h3>If Matrix Density Increases</h3>
+
+                <ul>
+                    <li>Rock becomes denser</li>
+                    <li>Formation may contain carbonates</li>
+                    <li>Drilling may become harder</li>
+                    <li>Bit wear increases</li>
+                </ul>
+            </div>
+
+            <div class="effect-box">
+                <h3>If Matrix Density Decreases</h3>
+
+                <ul>
+                    <li>Softer formations appear</li>
+                    <li>Possible shale presence</li>
+                    <li>Wellbore instability risk</li>
+                    <li>Sand production may occur</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- FLUID DENSITY -->
+
+        <div class="info-card">
+            <h2>Fluid Density Changes</h2>
+
+            <p>
+                Fluid density affects the fluid occupying the pore spaces
+                inside the reservoir.
+            </p>
+
+            <div class="effect-box">
+                <h3>If Fluid Density Increases</h3>
+
+                <ul>
+                    <li>Water saturation increases</li>
+                    <li>Heavy fluids enter pores</li>
+                    <li>Hydrostatic pressure increases</li>
+                    <li>Blowout risk reduces</li>
+                </ul>
+            </div>
+
+            <div class="effect-box">
+                <h3>If Fluid Density Decreases</h3>
+
+                <ul>
+                    <li>Gas zones may be present</li>
+                    <li>Lower pressure support</li>
+                    <li>Kick risk increases</li>
+                    <li>Possible hydrocarbon indication</li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SUMMARY TABLE -->
+
+    <table class="relationship-table">
+
+        <thead>
+            <tr>
+                <th>Density Change</th>
+                <th>Effect on Pore Space</th>
+                <th>Reservoir Quality</th>
+                <th>Wellbore Effect</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            <tr>
+                <td class="warning">Bulk Density ↑</td>
+                <td>Pore space decreases</td>
+                <td>Poorer reservoir quality</td>
+                <td>Reduced fluid flow</td>
+            </tr>
+
+            <tr>
+                <td class="highlight">Bulk Density ↓</td>
+                <td>Pore space increases</td>
+                <td>Better reservoir quality</td>
+                <td>Improved production</td>
+            </tr>
+
+            <tr>
+                <td>Matrix Density ↑</td>
+                <td>Dense rock minerals</td>
+                <td>Hard formations</td>
+                <td>Hard drilling conditions</td>
+            </tr>
+
+            <tr>
+                <td>Matrix Density ↓</td>
+                <td>Softer formations</td>
+                <td>Unstable formations</td>
+                <td>Collapse risk</td>
+            </tr>
+
+            <tr>
+                <td>Fluid Density ↑</td>
+                <td>Water-filled pores</td>
+                <td>High water saturation</td>
+                <td>Stable pressure</td>
+            </tr>
+
+            <tr>
+                <td>Fluid Density ↓</td>
+                <td>Gas-filled pores</td>
+                <td>Possible hydrocarbon zone</td>
+                <td>Kick/blowout risk</td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+    <!-- DIAGRAM -->
+
+    <div class="diagram-section">
+
+        <h2 style="color:#38bdf8;">
+            Graphical Density Relationship Diagram
+        </h2>
+
+        <img src="{% static 'img/porosity.png' %}"
+             alt="Density Relationship Diagram">
+
+    </div>
+
+</div>
+
+</div>
+
+<!-- ===================================== -->
+<!-- POROSITY FORMULAS SECTION -->
+<!-- ===================================== -->
+
+<div class="relationship-wrapper">
+
+<div class="relationship-container">
+
+    <!-- SECTION TITLE -->
+
+    <div class="page-title">
+        <h1>Porosity Formula Library</h1>
+
+        <p>
+            Important undergraduate porosity formulas used in
+            petrophysics, reservoir engineering and well log analysis.
+        </p>
+    </div>
+
+    <!-- FORMULA 1 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>1. Basic Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕ = Vp / Vb
+            </div>
+        </div>
+
+        <p>
+            This is the fundamental porosity equation showing the ratio
+            of pore volume to bulk volume.
+        </p>
+
+        <div class="effect-box">
+            <ul>
+                <li><b>ϕ</b> = Porosity</li>
+                <li><b>Vp</b> = Pore Volume</li>
+                <li><b>Vb</b> = Bulk Volume</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- FORMULA 2 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>2. Percentage Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕ(%) = (Vp / Vb) × 100
+            </div>
+        </div>
+
+        <p>
+            Used to express porosity in percentage form.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 3 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>3. Density Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕ = (ρma − ρb) / (ρma − ρf)
+            </div>
+        </div>
+
+        <p>
+            The most common density log equation used in petrophysical analysis.
+        </p>
+
+        <div class="effect-box">
+            <ul>
+                <li><b>ρma</b> = Matrix Density</li>
+                <li><b>ρb</b> = Bulk Density</li>
+                <li><b>ρf</b> = Fluid Density</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- FORMULA 4 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>4. Sonic Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕ = (Δtlog − Δtma) / (Δtf − Δtma)
+            </div>
+        </div>
+
+        <p>
+            Used in sonic logging to estimate formation porosity.
+        </p>
+
+        <div class="effect-box">
+            <ul>
+                <li><b>Δtlog</b> = Formation Transit Time</li>
+                <li><b>Δtma</b> = Matrix Transit Time</li>
+                <li><b>Δtf</b> = Fluid Transit Time</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- FORMULA 5 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>5. Effective Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕe = Vconnected pores / Vb
+            </div>
+        </div>
+
+        <p>
+            Effective porosity includes only connected pore spaces
+            capable of transmitting fluids.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 6 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>6. Total Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕt = Vtotal pores / Vb
+            </div>
+        </div>
+
+        <p>
+            Total porosity includes all connected and isolated pores.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 7 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>7. Secondary Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕs = ϕt − ϕp
+            </div>
+        </div>
+
+        <p>
+            Secondary porosity develops due to fractures,
+            dissolution and diagenesis.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 8 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>8. Average Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕavg = Σ(ϕi hi) / Σhi
+            </div>
+        </div>
+
+        <p>
+            Used for calculating average porosity across
+            multiple reservoir layers.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 9 -->
+
+    <div class="info-card" style="margin-bottom:25px;">
+
+        <h2>9. Dual Porosity Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕt = ϕm + ϕf
+            </div>
+        </div>
+
+        <p>
+            Used in fractured carbonate reservoirs where
+            matrix and fracture porosity coexist.
+        </p>
+
+    </div>
+
+    <!-- FORMULA 10 -->
+
+    <div class="info-card">
+
+        <h2>10. Porosity Compaction Formula</h2>
+
+        <div class="formula-box">
+            <div class="formula">
+                ϕ = ϕ₀e⁻ᶜᶻ
+            </div>
+        </div>
+
+        <p>
+            Shows how porosity decreases with increasing
+            depth due to compaction.
+        </p>
+
+        <div class="effect-box">
+            <ul>
+                <li><b>ϕ₀</b> = Initial Porosity</li>
+                <li><b>c</b> = Compaction Constant</li>
+                <li><b>z</b> = Depth</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+
+</body>
+</html>

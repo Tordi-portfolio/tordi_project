@@ -130,3 +130,10 @@ MESSAGE_TAGS = {
     messages.WARNING: 'warning',
     messages.ERROR: 'danger',  # Bootstrap-friendly
 }
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
+
+# ✅ ADD THIS (IMPORTANT)
+STATIC_ROOT = BASE_DIR / "staticfiles"

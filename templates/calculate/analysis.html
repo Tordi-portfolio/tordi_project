@@ -1,139 +1,102 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Petrophysical Analysis Dashboard</title>
+{% extends "base.html" %}
+{% load static %}
 
-    <style>
-        /* ===== GLOBAL STYLE ===== */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #0b0f1a;
-            color: #ffffff;
-        }
+{% block extra_css %}
+<style>
 
-        /* ===== HEADER ===== */
-        .header {
-            background: linear-gradient(90deg, #0f172a, #1e3a8a, #0f172a);
-            padding: 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+/* ===== NAMESPACED DASHBOARD ONLY ===== */
 
-        .subtext {
-            font-size: 13px;
-            color: #a5b4fc;
-            margin-top: 5px;
-        }
+.petrophys-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
 
-        /* ===== CONTAINER ===== */
-        .container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            padding: 40px;
-        }
+/* HEADER */
+.petrophys-header {
+    background: linear-gradient(90deg, #0f172a, #1e3a8a, #0f172a);
+    padding: 20px;
+    text-align: center;
+    color: white;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
 
-        /* ===== CARDS ===== */
-        .card {
-            background: #111827;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0,0,0,0.4);
-            border: 1px solid #1f2937;
-        }
+/* CARDS */
+.petrophys-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    border: 1px solid #e6eaf0;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.05);
+}
 
-        .card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 0 20px rgba(59,130,246,0.4);
-            border: 1px solid #3b82f6;
-        }
+.petrophys-card h3 {
+    color: #002147;
+}
 
-        .card h3 {
-            margin-bottom: 10px;
-            color: #60a5fa;
-        }
+/* BUTTON */
+.petrophys-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 14px;
+    background: #002147;
+    color: white;
+    border-radius: 6px;
+    text-decoration: none;
+}
 
-        .card p {
-            font-size: 13px;
-            color: #cbd5e1;
-        }
+/* MOBILE */
+@media (max-width: 768px) {
+    .petrophys-container {
+        grid-template-columns: 1fr;
+    }
 
-        /* ===== BUTTON STYLE ===== */
-        .btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 15px;
-            background: #3b82f6;
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: 0.3s;
-        }
+    .petrophys-btn {
+        width: 100%;
+        display: block;
+    }
+}
 
-        .btn:hover {
-            background: #2563eb;
-        }
+</style>
+{% endblock %}
 
-        /* ===== FOOTER ===== */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            font-size: 12px;
-            color: #64748b;
-        }
-    </style>
-</head>
+{% block content %}
 
-<body>
-
-<div class="header">
-     PETROPHYSICAL ANALYSIS SYSTEM
-    <div class="subtext">LAS File Processing • Reservoir Evaluation • Engineering Computation</div>
+<div class="petrophys-header">
+    PETROPHYSICAL ANALYSIS SYSTEM
+    <div style="font-size:13px;color:#a5b4fc;">
+        LAS File Processing • Reservoir Evaluation • Engineering Computation
+    </div>
 </div>
 
-<div class="container">
+<div class="petrophys-container">
 
-    <!-- POROSITY -->
-    <div class="card">
-        <h3>🪨 Porosity Analysis</h3>
+    <div class="petrophys-card">
+        <h3> Porosity Analysis</h3>
         <p>Estimate reservoir porosity using density log interpretation.</p>
-        <a class="btn" href="{% url 'logs:porosity' %}">Open Module</a>
+        <a class="petrophys-btn" href="{% url 'logs:porosity' %}">Open Module</a>
     </div>
 
-    <!-- WATER SATURATION -->
-    <div class="card">
-        <h3>💧 Water Saturation</h3>
+    <div class="petrophys-card">
+        <h3> Water Saturation</h3>
         <p>Compute Sw using Archie's equation for reservoir evaluation.</p>
-        <a class="btn" href="{% url 'logs:sw' %}">Open Module</a>
+        <a class="petrophys-btn" href="{% url 'logs:sw' %}">Open Module</a>
     </div>
 
-    <!-- PERMEABILITY -->
-    <div class="card">
-        <h3>🛢️ Permeability</h3>
+    <div class="petrophys-card">
+        <h3> Permeability</h3>
         <p>Estimate permeability using empirical petrophysical correlations.</p>
-        <a class="btn" href="{% url 'logs:perm' %}">Open Module</a>
+        <a class="petrophys-btn" href="{% url 'logs:perm' %}">Open Module</a>
     </div>
 
-    <!-- LAS VIEW -->
-    <div class="card">
-        <h3>📂 LAS Data Viewer</h3>
+    <div class="petrophys-card">
+        <h3> LAS Data Viewer</h3>
         <p>View and analyze uploaded well log LAS files.</p>
-        <a class="btn" href="{% url 'logs:parameter' %}">Open Module</a>
+        <a class="petrophys-btn" href="{% url 'logs:parameter' %}">Open Module</a>
     </div>
 
 </div>
 
-<div class="footer">
-    Final Year Project • Petroleum Engineering • Reservoir Characterization System
-</div>
-
-</body>
-</html>
+{% endblock %}

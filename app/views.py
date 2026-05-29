@@ -11,6 +11,15 @@ from django.contrib import messages
 def index(request):
     return render(request, 'logs/index.html')
 
+def porosity_details(request):
+    return render(request, 'calculate/porosity/porosity_details.html')
+
+def perm_details(request):
+    return render(request, 'calculate/perm/perm_details.html')
+
+def sw_details(request):
+    return render(request, 'calculate/sw/sw_details.html')
+
 
 def _read_las_from_storage(file_field):
     """Read LAS file from UploadedLAS.file and return (lasio.LASFile, DataFrame)."""
@@ -167,22 +176,85 @@ def analysis_home(request):
 
 
 
-
 from django.shortcuts import render
+import json
 
 def porosity_view(request):
+
     result = None
+    interpretation = []
+
+    bulk_values = []
+    porosity_values = []
 
     if request.method == "POST":
-        rho_ma = float(request.POST.get("rho_ma"))
-        rho_f = float(request.POST.get("rho_f"))
-        rho_b = float(request.POST.get("rho_b"))
 
-        phi = (rho_ma - rho_b) / (rho_ma - rho_f)
+        # =========================================
+        # MAIN POROSITY CALCULATOR
+        # =========================================
 
-        result = round(phi, 4)
+        if request.POST.get("rho_ma"):
 
-    return render(request, "calculate/porosity.html", {"result": result})
+            rho_ma = float(request.POST.get("rho_ma"))
+            rho_f = float(request.POST.get("rho_f"))
+            rho_b = float(request.POST.get("rho_b"))
+
+            if rho_ma != rho_f:
+
+                if rho_ma == rho_f:
+                    result = "Invalid input: Matrix density cannot equal fluid density."
+
+                else:
+                    phi = (rho_ma - rho_b) / (rho_ma - rho_f)
+                    result = round(phi, 4)
+
+                result = round(phi, 4)
+
+                porosity_percent = result * 100
+
+                # INTERPRETATION
+
+                if rho_ma > rho_b:
+                    interpretation.append(
+                        "Matrix density is greater than bulk density, indicating pore spaces within the formation."
+                    )
+
+                if rho_b < 2.2:
+                    interpretation.append(
+                        "Low bulk density suggests improved reservoir quality and increased pore spaces."
+                    )
+
+                if rho_f < 1.0:
+                    interpretation.append(
+                        "Low fluid density may indicate hydrocarbon-bearing formations."
+                    )
+
+                if porosity_percent >= 15:
+                    interpretation.append(
+                        "The formation exhibits good porosity and favorable reservoir characteristics."
+                    )
+            else:
+                result = "Invalid input: Matrix density cannot equal fluid density."
+
+        # =========================================
+        # GRAPH DATA
+        # =========================================
+        for i in range(1, 9):
+            porosity = request.POST.get(f"porosity_{i}")
+            bulk = request.POST.get(f"bulk_{i}")
+
+            if porosity and bulk:
+
+                porosity_values.append(float(porosity))
+                bulk_values.append(float(bulk))
+    context = {
+        "result": result,
+        "interpretation": interpretation,
+        "bulk_values": json.dumps(bulk_values),
+        "porosity_values": json.dumps(porosity_values),
+    }
+    return render(request, "calculate/porosity/porosity.html", context)
+
 
 
 def sw_view(request):
@@ -200,7 +272,7 @@ def sw_view(request):
 
         result = round(sw, 4)
 
-    return render(request, "calculate/sw.html", {"result": result})
+    return render(request, "calculate/sw/sw.html", {"result": result})
 
 
 import math
@@ -245,7 +317,7 @@ def perm_view(request):
                 k = (Q * mu * L) / (A * dP)
                 result = f"{round(k,5)} Darcy ({round(k*1000,2)} mD)"
 
-    return render(request, "calculate/permeability.html", {
+    return render(request, "calculate/perm/permeability.html", {
         "result": result,
         "method": method
     })

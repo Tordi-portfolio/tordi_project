@@ -1,0 +1,510 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Porosity Calculator</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: #0b0f1a;
+            color: white;
+        }
+
+        .header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(90deg, #0f172a, #1e3a8a);
+            font-size: 22px;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: #111827;
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid #1f2937;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            font-size: 13px;
+            color: #cbd5e1;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            color: white;
+            border-radius: 5px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #0f172a;
+            border-left: 3px solid #3b82f6;
+        }
+
+        a {
+            color: #60a5fa;
+            text-decoration: none;
+            font-size: 12px;
+        }
+
+        /* ===================================== */
+        /* RESULT NOTE */
+        /* ===================================== */
+
+        .result-note{
+            margin-top:20px;
+            padding:15px;
+            background:#10182f;
+            border-left:5px solid #00d4ff;
+            border-radius:8px;
+            color:#e6e6e6;
+        }
+
+        .result-note h3{
+            color:#00d4ff;
+        }
+
+        .result-note h4{
+            margin-top:10px;
+            color:#ffffff;
+        }
+
+        /* ===================================== */
+        /* RELATIONSHIP SECTION */
+        /* ===================================== */
+
+        .relationship-wrapper{
+            width:90%;
+            margin:40px auto;
+        }
+
+        .relationship-container{
+            max-width:1200px;
+            margin:auto;
+            padding:20px;
+            color:white;
+            font-family:Arial, sans-serif;
+            background:#111827;
+            border-radius:18px;
+            border:1px solid #1e293b;
+        }
+
+        .page-title{
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .page-title h1{
+            font-size:42px;
+            color:#38bdf8;
+            margin-bottom:10px;
+        }
+
+        .page-title p{
+            color:#cbd5e1;
+            font-size:18px;
+        }
+
+        .info-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit, minmax(350px,1fr));
+            gap:25px;
+        }
+
+        .info-card{
+            background:#0f172a;
+            border:1px solid #1e293b;
+            border-radius:18px;
+            padding:25px;
+            transition:0.3s ease;
+        }
+
+        .info-card:hover{
+            transform:translateY(-5px);
+            border-color:#38bdf8;
+        }
+
+        .info-card h2{
+            color:#38bdf8;
+            margin-bottom:15px;
+            font-size:26px;
+        }
+
+        .info-card h3{
+            color:#facc15;
+            margin-top:20px;
+            margin-bottom:10px;
+        }
+
+        .info-card p{
+            color:#d1d5db;
+            line-height:1.8;
+        }
+
+        .effect-box{
+            background:#1e293b;
+            padding:15px;
+            border-radius:12px;
+            margin-top:15px;
+        }
+
+        .effect-box ul{
+            padding-left:20px;
+        }
+
+        .effect-box li{
+            margin-bottom:10px;
+            color:#e5e7eb;
+        }
+
+        .formula-box{
+            background:#0f172a;
+            border:1px solid #334155;
+            padding:25px;
+            border-radius:16px;
+            text-align:center;
+            margin-bottom:40px;
+        }
+
+        .formula-box h2{
+            color:#38bdf8;
+            margin-bottom:20px;
+        }
+
+        .formula{
+            font-size:40px;
+            color:#f8fafc;
+            font-weight:bold;
+        }
+
+        .relationship-table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:40px;
+            overflow:hidden;
+            border-radius:16px;
+        }
+
+        .relationship-table th{
+            background:#0284c7;
+            color:white;
+            padding:16px;
+            text-align:left;
+        }
+
+        .relationship-table td{
+            background:#0f172a;
+            padding:16px;
+            border-bottom:1px solid #1e293b;
+            color:#d1d5db;
+        }
+
+        .relationship-table tr:hover td{
+            background:#1e293b;
+        }
+
+        .diagram-section{
+            margin-top:50px;
+            text-align:center;
+        }
+
+        .diagram-section img{
+            width:100%;
+            max-width:1000px;
+            border-radius:18px;
+            border:2px solid #1e293b;
+            margin-top:20px;
+        }
+
+        .highlight{
+            color:#22c55e;
+            font-weight:bold;
+        }
+
+        .warning{
+            color:#ef4444;
+            font-weight:bold;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="header"> <a href="{% url 'logs:tordi' %}"><button style="margin-top:20px;">Home</button></a></div>
+
+<div class="header"> Porosity Calculator (Density Log Method)</div>
+
+<div class="container">
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <label>Matrix Density (ρma)</label>
+        <input type="number" name="rho_ma" step="any">
+
+        <label>Fluid Density (ρf)</label>
+        <input type="number" name="rho_f" step="any">
+
+        <label>Bulk Density (ρb)</label>
+        <input type="number" name="rho_b" step="any">
+
+        <button type="submit">Calculate Porosity</button>
+    </form>
+
+    {% if result %}
+
+        <div class="result">
+
+            <strong>Porosity Result:</strong><br><br>
+
+            {{ result }}
+
+            <br><br>
+
+            <strong>
+                Percentage Porosity:
+            </strong>
+
+            {{ result|floatformat:4 }} × 100
+
+        </div>
+
+        <!-- DYNAMIC INTERPRETATION -->
+
+        <div class="result-note">
+
+            <h3>
+                📊 Dynamic Reservoir Interpretation
+            </h3>
+
+            <ul>
+
+                {% for item in interpretation %}
+                    <li>{{ item }}</li>
+                {% endfor %}
+
+            </ul>
+
+        </div>
+
+{% endif %}
+
+    <br>
+    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
+</div>
+
+
+<!-- ===================================== -->
+<!-- GRAPH INPUT SECTION -->
+<!-- ===================================== -->
+
+<div class="relationship-wrapper">
+
+<div class="relationship-container">
+
+    <div class="page-title">
+        <h1>Porosity vs Bulk Density Plot</h1>
+
+        <p>
+            Enter porosity and bulk density values to generate
+            a reservoir relationship graph.
+        </p>
+    </div>
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        <table class="relationship-table">
+
+            <thead>
+                <tr>
+                    <th>Point</th>
+                    <th>Porosity</th>
+                    <th>Bulk Density</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for i in "12345678" %}
+
+                <tr>
+
+                    <td>{{ forloop.counter }}</td>
+
+                    <td>
+                        <input type="number"
+                               step="any"
+                               name="porosity_{{ forloop.counter }}"
+                               placeholder="Enter Porosity">
+                    </td>
+
+                    <td>
+                        <input type="number"
+                               step="any"
+                               name="bulk_{{ forloop.counter }}"
+                               placeholder="Enter Bulk Density">
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <button type="submit" style="margin-top:20px;">
+            Plot Graph
+        </button>
+
+    </form>
+</div>
+</div>
+
+
+<!-- ===================================== -->
+<!-- GRAPH SECTION -->
+<!-- ===================================== -->
+
+<div class="relationship-wrapper">
+
+<div class="relationship-container">
+
+    <div class="page-title">
+        <h1>Porosity vs Bulk Density Graph</h1>
+    </div>
+
+    <canvas id="porosityChart"></canvas>
+</div>
+</div>
+
+
+    <!-- DIAGRAM -->
+
+    <div class="diagram-section">
+
+        <h2 style="color:#38bdf8;">
+            Graphical Density Relationship Diagram
+        </h2>
+
+        <img src="{% static 'img/porosity.png' %}"
+             alt="Density Relationship Diagram">
+    </div>
+</div>
+
+</div>
+
+<div class="header"> <a href="{% url 'logs:porosity_details' %}"><button style="margin-top:20px;">More About Porosity</button></a></div>
+
+</body>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const bulkDensity = {{ bulk_values|safe }};
+    const porosity = {{ porosity_values|safe }};
+
+    const ctx = document.getElementById('porosityChart');
+
+    new Chart(ctx, {
+
+        type: 'line',
+
+        data: {
+
+            labels: bulkDensity,
+
+            datasets: [{
+
+                label: 'Porosity vs Bulk Density',
+
+                data: porosity,
+
+                borderWidth: 3,
+
+                fill: false,
+
+                tension: 0.3
+
+            }]
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+                    labels: {
+                        color: 'white'
+                    }
+                }
+            },
+
+            scales: {
+
+                x: {
+
+                    title: {
+                        display: true,
+                        text: 'Bulk Density',
+                        color: 'white'
+                    },
+
+                    ticks: {
+                        color: 'white'
+                    }
+                },
+
+                y: {
+
+                    title: {
+                        display: true,
+                        text: 'Porosity',
+                        color: 'white'
+                    },
+
+                    ticks: {
+                        color: 'white'
+                    }
+                }
+            }
+        }
+    });
+
+</script>
+
+</html>

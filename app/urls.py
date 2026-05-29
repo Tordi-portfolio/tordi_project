@@ -16,6 +16,8 @@ urlpatterns = [
     path("sw/", views.sw_view, name="sw"),
     path("permeability/", views.perm_view, name="perm"),
 
-    path('testing', views.testing, name='testing')
+    path('porosity_details', views.porosity_details, name='porosity_details'),
+    path('perm_details', views.perm_details, name='perm_details'),
+    path('sw_details', views.sw_details, name='sw_details'),
 ]
 
