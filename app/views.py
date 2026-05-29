@@ -129,10 +129,6 @@ def parameter(request):
     return render(request, 'parameter.html')
 
 
-# import your Well model from your existing app
-# from yourapp.models import Well
-
-
 def analysis_home(request):
     result = None
 
@@ -257,22 +253,147 @@ def porosity_view(request):
 
 
 
+import json
+from django.shortcuts import render
+
 def sw_view(request):
+
     result = None
+    interpretation = []
+    points = []
 
     if request.method == "POST":
-        a = float(request.POST.get("a"))
-        m = float(request.POST.get("m"))
-        n = float(request.POST.get("n"))
-        rw = float(request.POST.get("rw"))
-        rt = float(request.POST.get("rt"))
-        phi = float(request.POST.get("phi"))
 
-        sw = ((a * rw) / ((phi ** m) * rt)) ** (1 / n)
+        try:
 
-        result = round(sw, 4)
+            # =========================================
+            # MAIN ARCHIE INPUTS
+            # =========================================
 
-    return render(request, "calculate/sw/sw.html", {"result": result})
+            a = float(request.POST.get("a", 1))
+            m = float(request.POST.get("m", 2))
+            n = float(request.POST.get("n", 2))
+            rw = float(request.POST.get("rw", 0))
+            rt = float(request.POST.get("rt", 0))
+            phi = float(request.POST.get("phi", 0))
+
+            # =========================================
+            # VALIDATION
+            # =========================================
+
+            if phi <= 0 or rt <= 0 or rw <= 0:
+
+                result = "Invalid input values."
+
+            else:
+
+                # =========================================
+                # ARCHIE EQUATION
+                # =========================================
+
+                sw = ((a * rw) / ((phi ** m) * rt)) ** (1 / n)
+                result = round(sw, 4)
+
+                sw_percent = result * 100
+
+                # =========================================
+                # INTERPRETATIONS
+                # =========================================
+
+                # Resistivity
+                if rt > 50:
+                    interpretation.append(
+                        "High Rt indicates possible hydrocarbon-bearing formation."
+                    )
+                elif rt < 10:
+                    interpretation.append(
+                        "Low Rt suggests water-bearing formation."
+                    )
+                else:
+                    interpretation.append(
+                        "Moderate Rt indicates mixed fluid saturation."
+                    )
+
+                # Porosity
+                if phi > 0.25:
+                    interpretation.append(
+                        "High porosity → good reservoir quality."
+                    )
+                elif phi < 0.10:
+                    interpretation.append(
+                        "Low porosity → tight formation."
+                    )
+                else:
+                    interpretation.append(
+                        "Moderate porosity → fair reservoir quality."
+                    )
+
+                # Water saturation
+                if sw_percent < 25:
+                    interpretation.append(
+                        "Low Sw → hydrocarbon-rich zone."
+                    )
+                elif sw_percent <= 50:
+                    interpretation.append(
+                        "Moderate Sw → mixed fluids."
+                    )
+                else:
+                    interpretation.append(
+                        "High Sw → water-bearing zone."
+                    )
+
+                # Tortuosity
+                if a > 1:
+                    interpretation.append(
+                        "High tortuosity → complex pore paths."
+                    )
+
+                # Cementation
+                if m > 2:
+                    interpretation.append(
+                        "High cementation → compact rock."
+                    )
+
+                # Saturation exponent
+                if n > 2:
+                    interpretation.append(
+                        "High saturation exponent → complex fluid distribution."
+                    )
+
+            # =========================================
+            # GRAPH DATA (8 POINT TABLE)
+            # =========================================
+
+            for i in range(1, 9):
+
+                phi_i = request.POST.get(f"phi_{i}")
+                sw_i = request.POST.get(f"sw_{i}")
+
+                if phi_i and sw_i:
+
+                    try:
+                        points.append({
+                            "x": float(phi_i),   # Porosity (X-axis)
+                            "y": float(sw_i)     # Water saturation (Y-axis)
+                        })
+                    except:
+                        pass
+
+        except:
+            result = "Invalid input values."
+
+    # =========================================
+    # CONTEXT
+    # =========================================
+
+    context = {
+        "result": result,
+        "interpretation": interpretation,
+        "graph_points": json.dumps(points)
+    }
+
+    return render(request, "calculate/sw/sw.html", context)
+
 
 
 import math
