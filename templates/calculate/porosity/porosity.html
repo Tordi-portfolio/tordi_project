@@ -92,6 +92,11 @@
             color:#00d4ff;
         }
 
+        .result-note ul li{
+            padding: 1%;
+            text-decoration: none;
+        }
+
         .result-note h4{
             margin-top:10px;
             color:#ffffff;
@@ -255,11 +260,140 @@
         }
 
     </style>
+
+
+<style>
+    /* ===================================== */
+/* RESPONSIVE DESIGN */
+/* ===================================== */
+
+@media (max-width: 1024px) {
+    .page-title h1 {
+        font-size: 34px;
+    }
+
+    .formula {
+        font-size: 32px;
+    }
+
+    .relationship-container {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .header {
+        font-size: 18px;
+        padding: 15px;
+    }
+
+    .container {
+        padding: 15px;
+        margin: 5px;
+    }
+
+    .page-title h1 {
+        font-size: 26px;
+    }
+
+    .page-title p {
+        font-size: 14px;
+    }
+
+    input {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .info-card {
+        padding: 18px;
+    }
+
+    .formula {
+        font-size: 24px;
+    }
+
+    .relationship-table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .relationship-table th,
+    .relationship-table td {
+        padding: 10px;
+        font-size: 13px;
+    }
+
+    .diagram-section img {
+        width: 100%;
+        height: auto;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .header {
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .container {
+        padding: 12px;
+    }
+
+    label {
+        font-size: 12px;
+    }
+
+    input {
+        font-size: 13px;
+    }
+
+    button {
+        font-size: 13px;
+    }
+
+    .page-title h1 {
+        font-size: 22px;
+    }
+
+    .page-title p {
+        font-size: 13px;
+    }
+
+    .relationship-container {
+        padding: 10px;
+    }
+
+    .info-card h2 {
+        font-size: 20px;
+    }
+
+    .info-card p {
+        font-size: 13px;
+    }
+
+    .formula {
+        font-size: 20px;
+    }
+}
+</style>
 </head>
 
 <body>
 
-<div class="header"> <a href="{% url 'logs:tordi' %}"><button style="margin-top:20px;">Home</button></a></div>
+<div class="header"> <a href="{% url 'logs:tordi' %}"><button style="margin-top:20px; padding: 30px; font-size: 30px;">Home</button></a></div>
 
 <div class="header"> Porosity Calculator (Density Log Method)</div>
 
@@ -303,7 +437,7 @@
         <div class="result-note">
 
             <h3>
-                📊 Dynamic Reservoir Interpretation
+                 Dynamic Reservoir Interpretation
             </h3>
 
             <ul>
@@ -427,7 +561,7 @@
 
 </div>
 
-<div class="header"> <a href="{% url 'logs:porosity_details' %}"><button style="margin-top:20px;">More About Porosity</button></a></div>
+<div class="header"> <a href="{% url 'logs:porosity_details' %}"><button style="margin-top:50px; padding: 30px; font-size: 30px;">More About Porosity</button></a></div>
 
 </body>
 

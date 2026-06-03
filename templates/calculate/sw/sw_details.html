@@ -1,15 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+
 <!-- ABOUT SECTION -->
 <div class="result-note">
-    <h3>📘 About Water Saturation</h3>
+    <h3> About Water Saturation</h3>
     <p>
         Water saturation (Sw) is the fraction of pore space in a reservoir rock that is filled with water.
         It is critical for estimating hydrocarbon volume.
     </p>
 
-    <h4>📐 Archie’s Equation</h4>
+    <h4> Archie’s Equation</h4>
     <p>Sw = [ (a * Rw) / (φ^m * Rt) ]^(1/n)</p>
 
-    <h4>📊 Units</h4>
+    <h4> Units</h4>
     <ul>
         <li>Rw (Formation water resistivity): ohm·m</li>
         <li>Rt (True formation resistivity): ohm·m</li>
@@ -17,7 +21,7 @@
         <li>a, m, n: dimensionless constants</li>
     </ul>
 
-    <h4>⚠️ How to Use</h4>
+    <h4> How to Use</h4>
     <p>
         Convert porosity from % to fraction (e.g. 20% → 0.20).  
         Ensure resistivity values are in <b>ohm·m</b>.  
@@ -28,7 +32,7 @@
 <!-- NEW RELATIONSHIP SECTION -->
 <div class="relationship-box">
 
-    <h3>📊 Relationships Between Parameters</h3>
+    <h3> Relationships Between Parameters</h3>
 
     <div class="relation">Rt ↑ → Sw ↓</div>
     <p>
@@ -70,10 +74,10 @@
 <br>
 
 <!-- ARCHIE -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Archie’s Equation</div>
 
-        <div class="formula">
+        <div class="formula"> 
             Sw = [(a × Rw) / (φ^m × Rt)]^(1/n)
         </div>
 
@@ -85,7 +89,7 @@
     </div>
 
     <!-- FORMATION FACTOR -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Formation Factor</div>
 
         <div class="formula">
@@ -99,7 +103,7 @@
         <p><b>Parameters:</b> F, Rt, Rw, a, φ, m</p>
     </div>
 
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Effective Water Saturation</div>
 
         <div class="formula">
@@ -113,7 +117,7 @@
     </div>
 
     <!-- RESISTIVITY INDEX -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Resistivity Index</div>
 
         <div class="formula">
@@ -128,7 +132,7 @@
     </div>
 
     <!-- SIMANDOUX -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Simandoux Model</div>
 
         <div class="formula">
@@ -143,7 +147,7 @@
     </div>
 
     <!-- INDONESIA -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Indonesia Equation</div>
 
         <div class="formula">
@@ -158,7 +162,7 @@
     </div>
 
      <!-- WAXMAN SMITS -->
-    <div class="card">
+    <div class="card" style="padding: 20px;">
         <div class="label">Waxman–Smits Model</div>
 
         <div class="formula">
@@ -171,3 +175,5 @@
 
         <p><b>Parameters:</b> Sw, F, Rw, B, Qv, Rt, n</p>
     </div>
+
+{% endblock %}
