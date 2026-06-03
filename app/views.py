@@ -204,6 +204,13 @@ def porosity_view(request):
                     phi = (rho_ma - rho_b) / (rho_ma - rho_f)
                     result = round(phi, 4)
 
+                if rho_b > rho_ma:
+                    result = "Invalid input: Bulk density cannot be greater than matrix density."
+
+                else:
+                    phi = (rho_ma - rho_b) / (rho_ma - rho_f)
+                    result = round(phi, 4)
+
                 result = round(phi, 4)
 
                 porosity_percent = result * 100
@@ -212,7 +219,17 @@ def porosity_view(request):
 
                 if rho_ma > rho_b:
                     interpretation.append(
-                        "Matrix density is greater than bulk density, indicating pore spaces within the formation."
+                        "Matrix density is greater than bulk density, indicating Significant pore spaces exist, Indicates porosity is present."
+                    )
+
+                if rho_b > rho_ma:
+                    interpretation.append(
+                        "Bulk density cannot be greater than matrix density in a normal rock and fluid physics because The pore spaces must contain fluids denser than the rock matrix."
+                    )
+
+                if rho_b > rho_f:
+                    interpretation.append(
+                        "Bulk density cannot be greater than fluid, The fluid occupying the pores is lighter than the overall rock."
                     )
 
                 if rho_b < 2.2:
@@ -223,6 +240,16 @@ def porosity_view(request):
                 if rho_f < 1.0:
                     interpretation.append(
                         "Low fluid density may indicate hydrocarbon-bearing formations."
+                    )
+
+                if rho_f > rho_ma:
+                    interpretation.append(
+                        "If fluid density is greater than matrix density,the Pore spaces become unusually heavy."
+                    )
+
+                if rho_f > rho_b:
+                    interpretation.append(
+                        "If fluid density is greater than bulk density,The fluid inside pores is denser than the average density of the rock."
                     )
 
                 if porosity_percent >= 15:
@@ -303,11 +330,11 @@ def sw_view(request):
                 # Resistivity
                 if rt > 50:
                     interpretation.append(
-                        "High Rt indicates possible hydrocarbon-bearing formation."
+                        "High Rt greater than 50 indicates possible hydrocarbon-bearing formation."
                     )
                 elif rt < 10:
                     interpretation.append(
-                        "Low Rt suggests water-bearing formation."
+                        "Low Rt less than 10 suggests water-bearing formation."
                     )
                 else:
                     interpretation.append(
@@ -317,47 +344,77 @@ def sw_view(request):
                 # Porosity
                 if phi > 0.25:
                     interpretation.append(
-                        "High porosity → good reservoir quality."
+                        "High porosity greater than 0.25 suggests good reservoir quality."
                     )
                 elif phi < 0.10:
                     interpretation.append(
-                        "Low porosity → tight formation."
+                        "Low porosity less than 0.10 suggests tight formation."
                     )
                 else:
                     interpretation.append(
-                        "Moderate porosity → fair reservoir quality."
+                        "Moderate porosity greater than 0.10 and less than 0.25 indicates fair reservoir quality."
                     )
 
                 # Water saturation
                 if sw_percent < 25:
                     interpretation.append(
-                        "Low Sw → hydrocarbon-rich zone."
+                        "Low Sw less than 25% indicates hydrocarbon rich zone."
                     )
                 elif sw_percent <= 50:
                     interpretation.append(
-                        "Moderate Sw → mixed fluids."
+                        "Moderate Sw between 25% and 50% indicates mixed fluids."
                     )
                 else:
                     interpretation.append(
-                        "High Sw → water-bearing zone."
+                        "High Sw greater than 50% indicates water-bearing zone."
                     )
 
                 # Tortuosity
                 if a > 1:
                     interpretation.append(
-                        "High tortuosity → complex pore paths."
+                        "High tortuosity resulting in complex pore paths."
                     )
 
+                if a > m:
+                    interpretation.append(
+                        "When 'a' is greater than 'm', this implies irregular pore geometry or micro-fractures causing detours."
+                    )
+
+                if a > n:
+                    interpretation.append(
+                        "When 'a' is greater than 'n', this implies that Hydrocarbons may appear more dominant than they actually are."
+                    )
+ 
                 # Cementation
                 if m > 2:
                     interpretation.append(
-                        "High cementation → compact rock."
+                        "When 'm' is greater than 2, this implies high cementation resulting in a compact rock."
+                    )
+
+                if m > a:
+                    interpretation.append(
+                        "Flow is somewhat easier than expected from rock tightness."
+                    )
+
+                if m > n:
+                    interpretation.append(
+                        "Water can still form connected conductive films or channels, Even though pores are tight, water still forms connected conductive paths."
                     )
 
                 # Saturation exponent
                 if n > 2:
                     interpretation.append(
-                        "High saturation exponent → complex fluid distribution."
+                        "High saturation exponent results in complex fluid distribution."
+                    )
+
+                if n > a:
+                    interpretation.append(
+                        "When 'n' is greater than 'a', the flow paths are simple, but water is not continuous in the pores."
+                    )
+
+                if n > m:
+                    interpretation.append(
+                        "When 'n' is greater than 'm', the water distribution effect is stronger than pore cementation."
                     )
 
             # =========================================
@@ -399,50 +456,146 @@ def sw_view(request):
 import math
 from django.shortcuts import render
 
-def perm_view(request):
-    result = None
-    method = None
 
+def safe_float(value):
+    """Prevents ValueError from empty inputs"""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def perm_view(request):
+
+    result = None
+    interpretation = []
+
+    empirical_points = []
+    darcy_points = []
+
+    # ==========================================
+    # POST HANDLING
+    # ==========================================
     if request.method == "POST":
+
         method = request.POST.get("method")
 
-        # -------------------------
-        # EMPIRICAL METHOD
-        # -------------------------
-        if method == "empirical":
-            C = float(request.POST.get("C"))
-            phi = float(request.POST.get("phi"))
-            swi = float(request.POST.get("swi"))
+        # ==========================================
+        # EMPIRICAL SINGLE CALCULATION
+        # k = C(φ⁴)/(Swi²)
+        # ==========================================
+        if method == "empirical" and "phi_1" not in request.POST:
 
-            if swi == 0:
-                result = "Invalid Swi (cannot be zero)"
+            C = safe_float(request.POST.get("C"))
+            phi = safe_float(request.POST.get("phi"))
+            swi = safe_float(request.POST.get("swi"))
+
+            if None in (C, phi, swi):
+                result = "Please fill all fields correctly."
+
+            elif swi == 0:
+                result = "Swi cannot be zero"
+
             else:
                 k = C * (phi ** 4) / (swi ** 2)
                 result = f"{round(k,4)} Darcy ({round(k*1000,2)} mD)"
 
-        # -------------------------
-        # DARCY METHOD
-        # -------------------------
-        elif method == "darcy":
-            d = float(request.POST.get("diameter"))
-            L = float(request.POST.get("length"))
-            Q = float(request.POST.get("flow_rate"))
-            mu = float(request.POST.get("viscosity"))
-            dP = float(request.POST.get("pressure_drop"))
+                # interpretation
+                if phi:
+                    if phi > 0.25:
+                        interpretation.append("High porosity increases pore connectivity and permeability.")
+                    elif phi < 0.10:
+                        interpretation.append("Low porosity reduces fluid flow pathways.")
 
-            A = (math.pi * d**2) / 4
+                if swi:
+                    if swi > 0.5:
+                        interpretation.append("High water saturation reduces hydrocarbon flow.")
 
-            if dP == 0:
+        # ==========================================
+        # EMPIRICAL GRAPH (k vs φ)
+        # ==========================================
+        elif method == "empirical":
+
+            C = safe_float(request.POST.get("C")) or 1
+            swi = safe_float(request.POST.get("swi")) or 0.2
+
+            for i in range(1, 9):
+                phi = safe_float(request.POST.get(f"phi_{i}"))
+
+                if phi is None:
+                    continue
+
+                if swi == 0:
+                    continue
+
+                k = C * (phi ** 4) / (swi ** 2)
+
+                empirical_points.append({
+                    "x": phi,
+                    "y": k
+                })
+
+        # ==========================================
+        # DARCY SINGLE CALCULATION
+        # k = (Q μ L) / (A ΔP)
+        # ==========================================
+        elif method == "darcy" and "dP_1" not in request.POST:
+
+            d = safe_float(request.POST.get("diameter"))
+            L = safe_float(request.POST.get("length"))
+            Q = safe_float(request.POST.get("flow_rate"))
+            mu = safe_float(request.POST.get("viscosity"))
+            dP = safe_float(request.POST.get("pressure_drop"))
+
+            if None in (d, L, Q, mu, dP):
+                result = "Please fill all fields correctly."
+
+            elif dP == 0:
                 result = "Pressure drop cannot be zero"
+
             else:
+                A = (math.pi * d**2) / 4
                 k = (Q * mu * L) / (A * dP)
+
                 result = f"{round(k,5)} Darcy ({round(k*1000,2)} mD)"
+
+                if dP > 10:
+                    interpretation.append("High pressure drop indicates low permeability resistance.")
+
+                if Q > 5:
+                    interpretation.append("High flow rate suggests good pore connectivity.")
+
+        # ==========================================
+        # DARCY GRAPH (k vs ΔP)
+        # ==========================================
+        elif method == "darcy":
+
+            d = safe_float(request.POST.get("d_1")) or 1
+            L = safe_float(request.POST.get("L_1")) or 10
+            Q = safe_float(request.POST.get("Q_1")) or 1
+            mu = safe_float(request.POST.get("mu_1")) or 1
+
+            for i in range(1, 9):
+
+                dP = safe_float(request.POST.get(f"dP_{i}"))
+
+                if dP is None or dP == 0:
+                    continue
+
+                A = (math.pi * d**2) / 4
+                k = (Q * mu * L) / (A * dP)
+
+                darcy_points.append({
+                    "x": dP,
+                    "y": k
+                })
 
     return render(request, "calculate/perm/permeability.html", {
         "result": result,
-        "method": method
+        "interpretation": interpretation,
+        "empirical_points": empirical_points,
+        "darcy_points": darcy_points,
     })
-
 
 def testing(request):
     return render(request, 'testing/testing.html')
