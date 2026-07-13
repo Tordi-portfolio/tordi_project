@@ -1,89 +1,78 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}LAS Viewer — Error{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'logs/las.css' %}">
+<style>
+    .lv-err-wrap {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 60vh;
+        text-align: center;
+    }
+
+    .lv-err-container {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-top: 3px solid #c0392b;
+        padding: 30px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 480px;
+    }
+
+    .lv-err-title {
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 12px;
+        color: #c0392b;
+    }
+
+    .lv-err-message {
+        background: rgba(192,57,43,0.08);
+        padding: 14px 16px;
+        border: 1px solid rgba(192,57,43,0.3);
+        border-radius: 6px;
+        margin: 16px 0;
+        font-size: 14.5px;
+        color: var(--ink-soft);
+    }
+
+    .lv-err-btn {
+        display: inline-block;
+        padding: 10px 22px;
+        background: #c0392b;
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 14.5px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+
+    .lv-err-btn:hover {
+        background: #9c2d21;
+        color: #ffffff;
+    }
+
+    @media (max-width: 600px) {
+        .lv-err-title { font-size: 1.35rem; }
+        .lv-err-message { font-size: 13.5px; }
+        .lv-err-btn { font-size: 13.5px; padding: 9px 18px; }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LAS Viewer — Error</title>
-  <link rel="stylesheet" href="/static/logs/las.css">
-  <style>
-    /* Basic styling */
-    .lv-body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: #f5f5f5;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      text-align: center;
-    }
-
-    .lv-container {
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    }
-
-    .lv-title {
-      font-size: 1.8rem;
-      margin-bottom: 10px;
-      color: #ff4d4d;
-    }
-
-    .lv-error {
-      background: rgba(255, 77, 77, 0.1);
-      padding: 12px;
-      border: 1px solid #ff4d4d;
-      border-radius: 5px;
-      margin: 15px 0;
-      font-size: 1rem;
-    }
-
-    .lv-btn {
-      display: inline-block;
-      padding: 10px 20px;
-      background: #ff4d4d;
-      color: white;
-      text-decoration: none;
-      border-radius: 5px;
-      font-size: 1rem;
-      transition: background 0.3s ease;
-    }
-
-    .lv-btn:hover {
-      background: #e63e3e;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 600px) {
-      .lv-title {
-        font-size: 1.5rem;
-      }
-      .lv-error {
-        font-size: 0.9rem;
-      }
-      .lv-btn {
-        font-size: 0.9rem;
-        padding: 8px 16px;
-      }
-    }
-  </style>
-</head>
-<body class="lv-body">
-  <div class="lv-container">
-    <h1 class="lv-title">Couldn’t open LAS</h1>
-    <p class="lv-error">{{ error }}</p>
-    <a class="lv-btn" href="/">Back</a>
-  </div>
-</body>
-</html>
-
+<div class="lv-err-wrap">
+    <div class="lv-err-container">
+        <h1 class="lv-err-title">Couldn't open LAS</h1>
+        <p class="lv-err-message">{{ error }}</p>
+        <a class="lv-err-btn" href="/">Back</a>
+    </div>
+</div>
 {% endblock %}

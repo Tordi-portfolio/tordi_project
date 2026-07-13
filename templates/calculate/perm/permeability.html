@@ -1,260 +1,817 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Permeability Analysis</title>
+{% block title %}Permeability Calculator{% endblock %}
 
+{% block extra_css %}
 <style>
-/* =========================
-   GLOBAL BACKGROUND
-========================= */
-body {
-    margin: 0;
-    font-family: "Segoe UI", Arial, sans-serif;
-    background: linear-gradient(135deg, #050b18, #0a1a33, #0e2a52);
-    color: #e6f1ff;
-}
+    .pm-wrap * { box-sizing: border-box; }
 
-/* =========================
-   PAGE CONTAINER
-========================= */
-.container {
-    max-width: 1200px;
-    margin: 40px auto;
-    padding: 20px;
-}
-
-/* =========================
-   MAIN TITLE
-========================= */
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 28px;
-    color: #00d4ff;
-    letter-spacing: 1px;
-}
-
-/* =========================
-   GRID LAYOUT
-========================= */
-.grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 25px;
-}
-
-/* =========================
-   CARDS
-========================= */
-.card {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(0, 212, 255, 0.25);
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-    backdrop-filter: blur(10px);
-    transition: 0.3s ease;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    border-color: rgba(0, 212, 255, 0.6);
-}
-
-/* CARD TITLES */
-.card h2 {
-    margin-bottom: 15px;
-    color: #00d4ff;
-}
-
-/* =========================
-   INPUTS
-========================= */
-input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(255,255,255,0.1);
-    background: #0b1730;
-    color: white;
-    outline: none;
-    transition: 0.2s;
-}
-
-input:focus {
-    border-color: #00d4ff;
-}
-
-/* =========================
-   BUTTON
-========================= */
-button {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(90deg, #00d4ff, #0099cc);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    color: #001018;
-    transition: 0.3s;
-}
-
-button:hover {
-    transform: scale(1.03);
-}
-
-/* =========================
-   RESULT BOX
-========================= */
-.result {
-    margin-top: 25px;
-    padding: 18px;
-    background: rgba(0, 212, 255, 0.08);
-    border-left: 5px solid #00d4ff;
-    border-radius: 10px;
-}
-
-/* =========================
-   RESULT NOTE SECTION
-========================= */
-.result-note {
-    margin-top: 25px;
-    padding: 20px;
-    background: rgba(10, 20, 40, 0.85);
-    border-left: 5px solid #00d4ff;
-    border-radius: 12px;
-}
-
-.result-note h3 {
-    color: #00d4ff;
-}
-
-.result-note h4 {
-    margin-top: 10px;
-    color: #ffffff;
-}
-
-.result-note ul {
-    margin-left: 18px;
-}
-
-/* =========================
-   IMAGE SECTION
-========================= */
-.image-section {
-    margin-top: 50px;
-    text-align: center;
-}
-
-.image-section img {
-    width: 100%;
-    max-height: 450px;
-    object-fit: cover;
-    border-radius: 15px;
-    border: 2px solid rgba(0, 212, 255, 0.35);
-    box-shadow: 0 12px 35px rgba(0,0,0,0.6);
-    transition: 0.3s ease;
-}
-
-.image-section img:hover {
-    transform: scale(1.02);
-}
-
-.image-caption {
-    margin-top: 10px;
-    color: #a8cfff;
-    font-size: 14px;
-}
-
-/* =========================
-   RESPONSIVE
-========================= */
-@media (max-width: 900px) {
-    .grid {
-        grid-template-columns: 1fr;
+    .pm-wrap .pm-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 4px;
     }
-}
+
+    .pm-wrap .pm-subtitle {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--amber-deep);
+        margin-bottom: 20px;
+    }
+
+    .pm-wrap a.back-link {
+        display: inline-block;
+        margin-bottom: 18px;
+        color: var(--teal);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .pm-wrap a.back-link:hover { color: var(--amber-deep); }
+
+    /* METHOD TABS */
+    .pm-wrap .method-tabs {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+    }
+
+    .pm-wrap .tab-btn {
+        padding: 10px 26px;
+        border-radius: 30px;
+        border: 1.5px solid var(--border-color);
+        background: var(--surface);
+        color: var(--ink-soft);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s ease;
+        letter-spacing: 0.2px;
+    }
+
+    .pm-wrap .tab-btn:hover {
+        border-color: var(--ink);
+        color: var(--ink);
+    }
+
+    .pm-wrap .tab-btn.active-emp {
+        background: rgba(31,111,108,0.10);
+        border-color: var(--teal);
+        color: var(--teal);
+    }
+
+    .pm-wrap .tab-btn.active-dar {
+        background: rgba(184,118,58,0.10);
+        border-color: var(--amber);
+        color: var(--amber-deep);
+    }
+
+    /* FORMULA BANNER */
+    .pm-wrap .formula-banner {
+        text-align: center;
+        padding: 18px 24px;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        margin-bottom: 22px;
+    }
+
+    .pm-wrap .formula-banner .label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
+    }
+
+    .pm-wrap .formula-banner .formula {
+        font-family: var(--font-mono);
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--ink);
+    }
+
+    .pm-wrap #formula-emp .formula { color: var(--teal); }
+    .pm-wrap #formula-dar .formula { color: var(--amber-deep); }
+
+    .pm-wrap .formula-banner .desc {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        line-height: 1.7;
+    }
+
+    /* CARD */
+    .pm-wrap .pm-card {
+        background: var(--surface);
+        border-radius: 10px;
+        padding: 26px;
+        border: 1px solid var(--border-color);
+        margin-bottom: 22px;
+    }
+
+    .pm-wrap .pm-card.emp-card  { border-top: 3px solid var(--teal); }
+    .pm-wrap .pm-card.dar-card  { border-top: 3px solid var(--amber); }
+
+    .pm-wrap .card-title {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    .pm-wrap .emp-title  { color: var(--teal); }
+    .pm-wrap .dar-title  { color: var(--amber-deep); }
+    .pm-wrap .hist-title { color: var(--ink); }
+
+    /* INPUTS */
+    .pm-wrap .field { margin-bottom: 14px; }
+
+    .pm-wrap .field label {
+        display: block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        margin-bottom: 5px;
+    }
+
+    .pm-wrap .field input {
+        width: 100%;
+        padding: 10px 14px !important;
+        background: var(--surface) !important;
+        border: 1px solid #ced4da !important;
+        color: var(--ink) !important;
+        border-radius: 6px !important;
+        font-size: 14px !important;
+        outline: none;
+    }
+
+    .pm-wrap .field input:focus {
+        border-color: var(--ink) !important;
+        box-shadow: 0 0 0 0.15rem rgba(10,26,47,0.1) !important;
+    }
+
+    .pm-wrap .field input::placeholder { color: #9aa4b2; }
+
+    .pm-wrap .field-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    /* BUTTONS */
+    .pm-wrap .btn {
+        width: 100%;
+        padding: 11px;
+        border: none;
+        border-radius: 6px;
+        font-weight: 500;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+        margin-top: 4px;
+    }
+
+    .pm-wrap .btn-emp {
+        background: var(--teal);
+        color: #ffffff;
+    }
+    .pm-wrap .btn-emp:hover { background: #175957; }
+
+    .pm-wrap .btn-dar {
+        background: var(--amber-deep);
+        color: #ffffff;
+    }
+    .pm-wrap .btn-dar:hover { background: #74461f; }
+
+    .pm-wrap .btn-plot {
+        background: transparent;
+        border: 1px solid var(--teal);
+        color: var(--teal);
+        width: auto;
+        padding: 9px 18px;
+        font-size: 13px;
+    }
+    .pm-wrap .btn-plot:hover { background: rgba(31,111,108,0.08); }
+
+    .pm-wrap .btn-plot-dar {
+        background: transparent;
+        border: 1px solid var(--amber-deep);
+        color: var(--amber-deep);
+        width: auto;
+        padding: 9px 18px;
+        font-size: 13px;
+    }
+    .pm-wrap .btn-plot-dar:hover { background: rgba(184,118,58,0.08); }
+
+    .pm-wrap .btn-clear {
+        background: transparent;
+        border: 1px solid #c0392b;
+        color: #c0392b;
+        width: auto;
+        padding: 9px 18px;
+        font-size: 13px;
+    }
+    .pm-wrap .btn-clear:hover { background: rgba(192,57,43,0.08); }
+
+    .pm-wrap .btn:active { transform: scale(0.98); }
+
+    /* RESULT + INTERPRETATION */
+    .pm-wrap .result-box {
+        margin-top: 20px;
+        padding: 16px 20px;
+        background: var(--paper);
+        border-left: 4px solid var(--teal);
+        border-radius: 6px;
+    }
+
+    .pm-wrap .result-box.darcy { border-left-color: var(--amber); }
+
+    .pm-wrap .result-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--ink-soft);
+        margin-bottom: 6px;
+    }
+
+    .pm-wrap .result-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        color: var(--ink);
+    }
+
+    .pm-wrap .interp-box {
+        margin-top: 18px;
+        padding: 16px 20px;
+        background: var(--paper);
+        border-left: 4px solid var(--ink-soft);
+        border-radius: 6px;
+    }
+
+    .pm-wrap .interp-box h4 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+
+    .pm-wrap .interp-box ul { padding-left: 18px; margin: 0; }
+    .pm-wrap .interp-box li { margin-bottom: 6px; font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+
+    /* HISTORY TABLE */
+    .pm-wrap .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13.5px;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .pm-wrap .history-table th {
+        background: var(--ink);
+        color: #ffffff;
+        padding: 10px 14px;
+        text-align: left;
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
+
+    .pm-wrap .history-table td {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border-hair);
+        color: var(--ink-soft);
+        background: var(--surface);
+        font-family: var(--font-mono);
+    }
+
+    .pm-wrap .history-table tr:hover td { background: rgba(184,118,58,0.06); }
+
+    .pm-wrap .badge {
+        display: inline-block;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 600;
+    }
+
+    .pm-wrap .badge-emp   { background: rgba(31,111,108,0.14); color: var(--teal); }
+    .pm-wrap .badge-dar   { background: rgba(184,118,58,0.14); color: var(--amber-deep); }
+    .pm-wrap .badge-green { background: rgba(34,197,94,0.14); color: #1f9d5c; }
+
+    .pm-wrap .empty-state {
+        text-align: center;
+        padding: 22px;
+        color: #9aa4b2;
+        font-size: 13.5px;
+    }
+
+    .pm-wrap .btn-row {
+        display: flex;
+        gap: 10px;
+        margin-top: 14px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    /* CHART WRAP */
+    .pm-wrap .chart-wrap {
+        position: relative;
+        width: 100%;
+        height: 280px;
+        display: none;
+        margin-top: 20px;
+    }
+
+    /* IMAGE SECTION */
+    .pm-wrap .image-section {
+        text-align: center;
+    }
+
+    .pm-wrap .image-section h3 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        font-size: 17px;
+        margin-bottom: 14px;
+    }
+
+    .pm-wrap .image-section img {
+        width: 100%;
+        max-height: 420px;
+        object-fit: cover;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .pm-wrap .image-caption { margin-top: 10px; color: var(--ink-soft); font-size: 13px; }
+
+    /* BOTTOM ACTION */
+    .pm-wrap .pm-more-link {
+        text-align: center;
+        margin-top: 8px;
+    }
+
+    .pm-wrap .btn-more {
+        display: inline-block;
+        padding: 10px 22px;
+        border: 1px solid var(--ink);
+        color: var(--ink);
+        background: transparent;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .pm-wrap .btn-more:hover {
+        background: var(--ink);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.18);
+    }
+
+    .pm-wrap .section-gap { margin-top: 22px; }
+
+    @media (max-width: 700px) {
+        .pm-wrap .method-tabs { flex-direction: column; }
+        .pm-wrap .tab-btn { width: 100%; }
+        .pm-wrap .field-grid { grid-template-columns: 1fr; }
+        .pm-wrap .history-table { display: block; overflow-x: auto; }
+    }
 </style>
+{% endblock %}
 
-</head>
+{% block content %}
+<div class="pm-wrap">
 
-<body>
+    <a class="back-link" href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
 
-<div class="container">
+    <div class="pm-title">Permeability Calculator</div>
+    <div class="pm-subtitle">Empirical &amp; Darcy Core Methods</div>
 
-    <h1> Permeability Calculator using Empirical And Darcy Method</h1>
+    <!-- METHOD SELECTOR TABS -->
+    <div class="method-tabs">
+        <button class="tab-btn {% if active_method == 'empirical' %}active-emp{% endif %}"
+                id="tab-emp" onclick="switchMethod('empirical')" type="button">
+            Empirical Method
+        </button>
+        <button class="tab-btn {% if active_method == 'darcy' %}active-dar{% endif %}"
+                id="tab-dar" onclick="switchMethod('darcy')" type="button">
+            Darcy Core Method
+        </button>
+    </div>
 
-    <div class="grid">
 
-        <!-- EMPIRICAL METHOD -->
-        <div class="card">
-            <h2> Empirical Method</h2>
+    <!-- ============================================================
+         EMPIRICAL PANEL
+    ============================================================ -->
+    <div id="panel-empirical" class="method-panel">
+
+        <div class="formula-banner" id="formula-emp">
+            <div class="label">Empirical Formula</div>
+            <div class="formula">k = C · φ⁴ / Swi²</div>
+            <div class="desc">
+                <strong>k</strong> = Permeability (Darcy) &nbsp;|&nbsp;
+                <strong>C</strong> = Empirical constant &nbsp;|&nbsp;
+                <strong>φ</strong> = Porosity (fraction) &nbsp;|&nbsp;
+                <strong>Swi</strong> = Irreducible water saturation<br>
+                Used when only porosity and connate water saturation data are available.
+                Higher porosity and lower Swi give higher permeability.
+            </div>
+        </div>
+
+        <!-- Calculator -->
+        <div class="pm-card emp-card">
+            <div class="card-title emp-title">Calculate — Empirical Method</div>
 
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="method" value="empirical">
 
-                <input type="number" step="any" name="C" placeholder="Constant C" required>
-                <input type="number" step="any" name="phi" placeholder="Porosity (φ)" required>
-                <input type="number" step="any" name="swi" placeholder="Swi" required>
+                <div class="field">
+                    <label>Empirical Constant (C)</label>
+                    <input type="number" step="any" name="C" placeholder="e.g. 1.0" required>
+                </div>
+                <div class="field">
+                    <label>Porosity φ (fraction, 0–1)</label>
+                    <input type="number" step="any" name="phi" placeholder="e.g. 0.20" required>
+                </div>
+                <div class="field">
+                    <label>Irreducible Water Saturation Swi (fraction)</label>
+                    <input type="number" step="any" name="swi" placeholder="e.g. 0.25" required>
+                </div>
 
-                <button type="submit">Calculate</button>
+                <button type="submit" class="btn btn-emp">Calculate Permeability</button>
             </form>
+
+            {% if result and active_method == 'empirical' %}
+            <div class="result-box">
+                <div class="result-label">Permeability k</div>
+                <div class="result-value">{{ result }}</div>
+            </div>
+            {% if interpretation %}
+            <div class="interp-box">
+                <h4>Reservoir Interpretation</h4>
+                <ul>{% for item in interpretation %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
 
-        <!-- DARCY METHOD -->
-        <div class="card">
-            <h2> Darcy Core Method</h2>
+        <!-- History Table -->
+        <div class="pm-card section-gap">
+            <div class="card-title hist-title">Recent Empirical Calculations (latest 5)</div>
+
+            {% if emp_history %}
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>C</th>
+                        <th>φ</th>
+                        <th>Swi</th>
+                        <th>k (Darcy)</th>
+                        <th>k (mD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in emp_history %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ e.C }}</td>
+                        <td>{{ e.phi }}</td>
+                        <td>{{ e.swi }}</td>
+                        <td><span class="badge badge-emp">{{ e.k_darcy }}</span></td>
+                        <td><span class="badge badge-green">{{ e.k_md }} mD</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="btn-row">
+                <button class="btn btn-plot" onclick="showEmpHistoryGraph()" type="button">Plot k vs φ</button>
+                <form method="POST" action="{% url 'logs:perm_clear_history' %}" style="margin:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="which" value="empirical">
+                    <button type="submit" class="btn btn-clear">Clear</button>
+                </form>
+            </div>
+
+            <div class="chart-wrap" id="empHistChart">
+                <canvas id="empHistCanvas"></canvas>
+            </div>
+
+            {% else %}
+            <div class="empty-state">No empirical calculations yet.</div>
+            {% endif %}
+        </div>
+
+    </div><!-- /panel-empirical -->
+
+
+    <!-- ============================================================
+         DARCY PANEL
+    ============================================================ -->
+    <div id="panel-darcy" class="method-panel">
+
+        <div class="formula-banner" id="formula-dar">
+            <div class="label">Darcy's Law — Core Plug Method</div>
+            <div class="formula">k = (Q · μ · L) / (A · ΔP)</div>
+            <div class="desc">
+                <strong>k</strong> = Permeability (Darcy) &nbsp;|&nbsp;
+                <strong>Q</strong> = Flow rate (cc/s) &nbsp;|&nbsp;
+                <strong>μ</strong> = Viscosity (cP) &nbsp;|&nbsp;
+                <strong>L</strong> = Core length (cm)<br>
+                <strong>A</strong> = Cross-sectional area = π·d²/4 (cm²) &nbsp;|&nbsp;
+                <strong>ΔP</strong> = Pressure drop (atm)<br>
+                Used on laboratory core plugs. Directly measures fluid flow capacity.
+            </div>
+        </div>
+
+        <!-- Calculator -->
+        <div class="pm-card dar-card">
+            <div class="card-title dar-title">Calculate — Darcy Core Method</div>
 
             <form method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="method" value="darcy">
 
-                <input type="number" step="any" name="diameter" placeholder="Diameter (cm)" required>
-                <input type="number" step="any" name="length" placeholder="Length (cm)" required>
-                <input type="number" step="any" name="flow_rate" placeholder="Flow Rate (cc/s)" required>
-                <input type="number" step="any" name="viscosity" placeholder="Viscosity (cP)" required>
-                <input type="number" step="any" name="pressure_drop" placeholder="Pressure Drop (atm)" required>
+                <div class="field-grid">
+                    <div class="field">
+                        <label>Diameter d (cm)</label>
+                        <input type="number" step="any" name="diameter" placeholder="e.g. 3.8" required>
+                    </div>
+                    <div class="field">
+                        <label>Length L (cm)</label>
+                        <input type="number" step="any" name="length" placeholder="e.g. 6.0" required>
+                    </div>
+                    <div class="field">
+                        <label>Flow Rate Q (cc/s)</label>
+                        <input type="number" step="any" name="flow_rate" placeholder="e.g. 2.0" required>
+                    </div>
+                    <div class="field">
+                        <label>Viscosity μ (cP)</label>
+                        <input type="number" step="any" name="viscosity" placeholder="e.g. 1.0" required>
+                    </div>
+                    <div class="field" style="grid-column:span 2;">
+                        <label>Pressure Drop ΔP (atm)</label>
+                        <input type="number" step="any" name="pressure_drop" placeholder="e.g. 5.0" required>
+                    </div>
+                </div>
 
-                <button type="submit">Calculate</button>
+                <button type="submit" class="btn btn-dar">Calculate Permeability</button>
             </form>
+
+            {% if result and active_method == 'darcy' %}
+            <div class="result-box darcy">
+                <div class="result-label">Permeability k</div>
+                <div class="result-value">{{ result }}</div>
+            </div>
+            {% if interpretation %}
+            <div class="interp-box">
+                <h4>Reservoir Interpretation</h4>
+                <ul>{% for item in interpretation %}<li>{{ item }}</li>{% endfor %}</ul>
+            </div>
+            {% endif %}
+            {% endif %}
         </div>
 
+        <!-- History Table -->
+        <div class="pm-card section-gap">
+            <div class="card-title hist-title">Recent Darcy Calculations (latest 5)</div>
+
+            {% if darcy_history %}
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>d (cm)</th>
+                        <th>L (cm)</th>
+                        <th>Q (cc/s)</th>
+                        <th>μ (cP)</th>
+                        <th>ΔP (atm)</th>
+                        <th>k (Darcy)</th>
+                        <th>k (mD)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for e in darcy_history %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ e.diameter }}</td>
+                        <td>{{ e.length }}</td>
+                        <td>{{ e.flow_rate }}</td>
+                        <td>{{ e.viscosity }}</td>
+                        <td>{{ e.pressure_drop }}</td>
+                        <td><span class="badge badge-dar">{{ e.k_darcy }}</span></td>
+                        <td><span class="badge badge-green">{{ e.k_md }} mD</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="btn-row">
+                <button class="btn btn-plot-dar" onclick="showDarcyHistoryGraph()" type="button">Plot k vs ΔP</button>
+                <form method="POST" action="{% url 'logs:perm_clear_history' %}" style="margin:0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="which" value="darcy">
+                    <button type="submit" class="btn btn-clear">Clear</button>
+                </form>
+            </div>
+
+            <div class="chart-wrap" id="darcyHistChart">
+                <canvas id="darcyHistCanvas"></canvas>
+            </div>
+
+            {% else %}
+            <div class="empty-state">No Darcy calculations yet.</div>
+            {% endif %}
+        </div>
+
+    </div><!-- /panel-darcy -->
+
+
+    <!-- IMAGE SECTION -->
+    <div class="pm-card image-section">
+        <h3>Reservoir Rock Visualization</h3>
+        <img src="{% static 'img/permeabilityone.png' %}" alt="Reservoir Rock Formation">
+        <div class="image-caption">Visual representation of reservoir rock pore structure and fluid flow in porous media.</div>
     </div>
 
-    {% if result %}
-    <div class="result">
-        <strong>Result:</strong> {{ result }}
+    <div class="pm-more-link">
+        <a href="{% url 'logs:perm_details' %}">
+            <button type="button" class="btn-more">More Details on Permeability</button>
+        </a>
     </div>
-    {% endif %}
 
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<!-- =========================
-     IMAGE SECTION (ADDED)
-========================= -->
-<div class="image-section">
-    <h3 style="color:#00d4ff;"> Reservoir Rock Visualization</h3>
+<script>
+/* ── Data from Django ──────────────────────────────────── */
+const empPhiHist  = {{ emp_phi_hist|safe }};
+const empKHist    = {{ emp_k_hist|safe }};
+const darcyDpHist = {{ darcy_dp_hist|safe }};
+const darcyKHist  = {{ darcy_k_hist|safe }};
 
-    <img src="{% static 'img/permeabilityone.png' %}"
-         alt="Reservoir Rock Formation">
+/* ── Active method (set by server) ────────────────────── */
+let activeMethod = "{{ active_method }}";
 
-    <!-- <img src="{% static 'img/permeabilitytwo.png' %}"
-         alt="Reservoir Rock Formation"> -->
+/* ── Tab switching ────────────────────────────────────── */
+function switchMethod(method) {
+    activeMethod = method;
 
-    <div class="image-caption">
-        Visual representation of reservoir rock pore structure and fluid flow in porous media.
-    </div>
-</div>
+    document.getElementById('panel-empirical').style.display = method === 'empirical' ? 'block' : 'none';
+    document.getElementById('panel-darcy').style.display     = method === 'darcy'     ? 'block' : 'none';
 
-<a href="{% url 'logs:perm_details' %}">
-    <button type="submit">More details on water saturation</button>
-</a>
-</body>
-</html>
+    document.getElementById('tab-emp').className = 'tab-btn' + (method === 'empirical' ? ' active-emp' : '');
+    document.getElementById('tab-dar').className = 'tab-btn' + (method === 'darcy'     ? ' active-dar' : '');
+}
+
+// Initialise on load
+switchMethod(activeMethod);
+
+/* ── Chart helpers ────────────────────────────────────── */
+const chartDefaults = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: { labels: { color: '#0a1a2f', font: { size: 12 } } },
+        tooltip: {
+            backgroundColor: '#0a1a2f',
+            titleColor: '#ffffff',
+            bodyColor: '#e5e7eb',
+            borderColor: 'rgba(10,26,47,0.15)',
+            borderWidth: 1,
+        }
+    }
+};
+
+function scalesCfg(xLabel, yLabel) {
+    return {
+        x: {
+            type: 'linear',
+            title: { display: true, text: xLabel, color: '#0a1a2f' },
+            ticks: { color: '#43526b' },
+            grid:  { color: '#e7eaee' }
+        },
+        y: {
+            title: { display: true, text: yLabel, color: '#0a1a2f' },
+            ticks: { color: '#43526b' },
+            grid:  { color: '#e7eaee' }
+        }
+    };
+}
+
+/* ── Empirical history chart (on button click) ────────── */
+let empHistInstance = null;
+
+function showEmpHistoryGraph() {
+    if (empPhiHist.length === 0) {
+        alert('No empirical history to plot.');
+        return;
+    }
+    const wrap = document.getElementById('empHistChart');
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    if (empHistInstance) empHistInstance.destroy();
+
+    empHistInstance = new Chart(document.getElementById('empHistCanvas'), {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'k (mD) vs φ — History',
+                data: empPhiHist.map((phi, i) => ({ x: phi, y: empKHist[i] })),
+                borderColor: '#1f6f6c',
+                backgroundColor: 'rgba(31,111,108,0.15)',
+                showLine: true,
+                tension: 0.4,
+                pointRadius: 7,
+                pointHoverRadius: 10,
+                pointBorderColor: '#fff',
+                fill: true,
+                borderWidth: 2.5,
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            plugins: {
+                ...chartDefaults.plugins,
+                tooltip: {
+                    ...chartDefaults.plugins.tooltip,
+                    callbacks: {
+                        label: ctx => ` φ = ${ctx.parsed.x}  |  k = ${ctx.parsed.y} mD`
+                    }
+                }
+            },
+            scales: scalesCfg('Porosity φ', 'Permeability k (mD)')
+        }
+    });
+}
+
+/* ── Darcy history chart (on button click) ────────────── */
+let darcyHistInstance = null;
+
+function showDarcyHistoryGraph() {
+    if (darcyDpHist.length === 0) {
+        alert('No Darcy history to plot.');
+        return;
+    }
+    const wrap = document.getElementById('darcyHistChart');
+    wrap.style.display = 'block';
+    wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    if (darcyHistInstance) darcyHistInstance.destroy();
+
+    darcyHistInstance = new Chart(document.getElementById('darcyHistCanvas'), {
+        type: 'scatter',
+        data: {
+            datasets: [{
+                label: 'k (mD) vs ΔP — History',
+                data: darcyDpHist.map((dp, i) => ({ x: dp, y: darcyKHist[i] })),
+                borderColor: '#b8763a',
+                backgroundColor: 'rgba(184,118,58,0.15)',
+                showLine: true,
+                tension: 0.4,
+                pointRadius: 7,
+                pointHoverRadius: 10,
+                pointBorderColor: '#fff',
+                fill: true,
+                borderWidth: 2.5,
+            }]
+        },
+        options: {
+            ...chartDefaults,
+            plugins: {
+                ...chartDefaults.plugins,
+                tooltip: {
+                    ...chartDefaults.plugins.tooltip,
+                    titleColor: '#ffffff',
+                    callbacks: {
+                        label: ctx => ` ΔP = ${ctx.parsed.x} atm  |  k = ${ctx.parsed.y} mD`
+                    }
+                }
+            },
+            scales: scalesCfg('Pressure Drop ΔP (atm)', 'Permeability k (mD)')
+        }
+    });
+}
+</script>
+{% endblock %}

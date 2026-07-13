@@ -1,646 +1,530 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Porosity Calculator</title>
+{% block title %}Porosity Calculator{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #0b0f1a;
-            color: white;
-        }
-
-        .header {
-            padding: 20px;
-            text-align: center;
-            background: linear-gradient(90deg, #0f172a, #1e3a8a);
-            font-size: 22px;
-        }
-
-        .container {
-
-            margin: 10px;
-            background: #111827;
-            padding: 25px;
-            border-radius: 10px;
-            border: 1px solid #1f2937;
-        }
-
-        label {
-            display: block;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #cbd5e1;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-            border-radius: 5px;
-        }
-
-        button {
-            margin-top: 20px;
-            width: 100%;
-            padding: 10px;
-            background: #3b82f6;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #2563eb;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #0f172a;
-            border-left: 3px solid #3b82f6;
-        }
-
-        a {
-            color: #60a5fa;
-            text-decoration: none;
-            font-size: 12px;
-        }
-
-        /* ===================================== */
-        /* RESULT NOTE */
-        /* ===================================== */
-
-        .result-note{
-            margin-top:20px;
-            padding:15px;
-            background:#10182f;
-            border-left:5px solid #00d4ff;
-            border-radius:8px;
-            color:#e6e6e6;
-        }
-
-        .result-note h3{
-            color:#00d4ff;
-        }
-
-        .result-note ul li{
-            padding: 1%;
-            text-decoration: none;
-        }
-
-        .result-note h4{
-            margin-top:10px;
-            color:#ffffff;
-        }
-
-        /* ===================================== */
-        /* RELATIONSHIP SECTION */
-        /* ===================================== */
-
-        .relationship-wrapper{
-
-            margin:10px;
-        }
-
-        .relationship-container{
-            max-width:1200px;
-            margin:auto;
-            padding:20px;
-            color:white;
-            font-family:Arial, sans-serif;
-            background:#111827;
-            border-radius:18px;
-            border:1px solid #1e293b;
-        }
-
-        .page-title{
-            text-align:center;
-            margin-bottom:40px;
-        }
-
-        .page-title h1{
-            font-size:42px;
-            color:#38bdf8;
-            margin-bottom:10px;
-        }
-
-        .page-title p{
-            color:#cbd5e1;
-            font-size:18px;
-        }
-
-        .info-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit, minmax(350px,1fr));
-            gap:25px;
-        }
-
-        .info-card{
-            background:#0f172a;
-            border:1px solid #1e293b;
-            border-radius:18px;
-            padding:25px;
-            transition:0.3s ease;
-        }
-
-        .info-card:hover{
-            transform:translateY(-5px);
-            border-color:#38bdf8;
-        }
-
-        .info-card h2{
-            color:#38bdf8;
-            margin-bottom:15px;
-            font-size:26px;
-        }
-
-        .info-card h3{
-            color:#facc15;
-            margin-top:20px;
-            margin-bottom:10px;
-        }
-
-        .info-card p{
-            color:#d1d5db;
-            line-height:1.8;
-        }
-
-        .effect-box{
-            background:#1e293b;
-            padding:15px;
-            border-radius:12px;
-            margin-top:15px;
-        }
-
-        .effect-box ul{
-            padding-left:20px;
-        }
-
-        .effect-box li{
-            margin-bottom:10px;
-            color:#e5e7eb;
-        }
-
-        .formula-box{
-            background:#0f172a;
-            border:1px solid #334155;
-            padding:25px;
-            border-radius:16px;
-            text-align:center;
-            margin-bottom:40px;
-        }
-
-        .formula-box h2{
-            color:#38bdf8;
-            margin-bottom:20px;
-        }
-
-        .formula{
-            font-size:40px;
-            color:#f8fafc;
-            font-weight:bold;
-        }
-
-        .relationship-table{
-            width:100%;
-            border-collapse:collapse;
-            margin-top:40px;
-            overflow:hidden;
-            border-radius:16px;
-        }
-
-        .relationship-table th{
-            background:#0284c7;
-            color:white;
-            padding:16px;
-            text-align:left;
-        }
-
-        .relationship-table td{
-            background:#0f172a;
-            padding:16px;
-            border-bottom:1px solid #1e293b;
-            color:#d1d5db;
-        }
-
-        .relationship-table tr:hover td{
-            background:#1e293b;
-        }
-
-        .diagram-section{
-            margin-top:50px;
-            text-align:center;
-        }
-
-        .diagram-section img{
-            width:100%;
-            max-width:1000px;
-            border-radius:18px;
-            border:2px solid #1e293b;
-            margin-top:20px;
-        }
-
-        .highlight{
-            color:#22c55e;
-            font-weight:bold;
-        }
-
-        .warning{
-            color:#ef4444;
-            font-weight:bold;
-        }
-
-    </style>
-
-
+{% block extra_css %}
 <style>
-    /* ===================================== */
-/* RESPONSIVE DESIGN */
-/* ===================================== */
+    .ph-wrap * { box-sizing: border-box; }
 
-@media (max-width: 1024px) {
-    .page-title h1 {
-        font-size: 34px;
+    .ph-wrap .ph-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 4px;
     }
 
-    .formula {
-        font-size: 32px;
+    .ph-wrap .ph-subtitle {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--amber-deep);
+        margin-bottom: 24px;
     }
 
-    .relationship-container {
-        padding: 15px;
-    }
-}
-
-@media (max-width: 768px) {
-
-    .header {
-        font-size: 18px;
-        padding: 15px;
+    .ph-wrap .ph-card {
+        background: var(--surface);
+        border-radius: 10px;
+        padding: 26px;
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--amber);
+        margin-bottom: 22px;
     }
 
-    .container {
-        padding: 15px;
-        margin: 5px;
+    /* FORMULA BANNER */
+    .ph-wrap .formula-banner {
+        text-align: center;
+        padding: 18px 24px;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        margin-bottom: 22px;
     }
 
-    .page-title h1 {
-        font-size: 26px;
+    .ph-wrap .formula-banner .label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
     }
 
-    .page-title p {
-        font-size: 14px;
+    .ph-wrap .formula-banner .formula {
+        font-family: var(--font-mono);
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--amber-deep);
     }
 
-    input {
-        font-size: 14px;
-        padding: 8px;
-    }
-
-    button {
-        font-size: 14px;
-        padding: 10px;
-    }
-
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .info-card {
-        padding: 18px;
-    }
-
-    .formula {
-        font-size: 24px;
-    }
-
-    .relationship-table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-    }
-
-    .relationship-table th,
-    .relationship-table td {
-        padding: 10px;
+    .ph-wrap .formula-banner .desc {
+        margin-top: 10px;
         font-size: 13px;
+        color: var(--ink-soft);
+        line-height: 1.7;
     }
 
-    .diagram-section img {
+    .ph-wrap label {
+        display: block;
+        margin-top: 12px;
+        margin-bottom: 2px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
+    }
+
+    .ph-wrap input[type="number"] {
         width: 100%;
-        height: auto;
+        padding: 10px 14px !important;
+        margin-top: 5px;
+        background: var(--surface) !important;
+        border: 1px solid #ced4da !important;
+        color: var(--ink) !important;
+        border-radius: 6px !important;
+        font-size: 15px !important;
     }
-}
 
-@media (max-width: 480px) {
+    .ph-wrap input[type="number"]:focus {
+        border-color: var(--ink) !important;
+        box-shadow: 0 0 0 0.15rem rgba(10,26,47,0.1) !important;
+        outline: none;
+    }
 
-    .header {
+    .ph-wrap input[type="number"]::placeholder {
+        color: #9aa4b2;
+    }
+
+    .ph-wrap .ph-btn {
+        margin-top: 20px;
+        width: 100%;
+        padding: 11px;
+        background: var(--ink);
+        border: none;
+        color: #ffffff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .ph-wrap .ph-btn:hover {
+        background: #001733;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.22);
+    }
+
+    .ph-wrap .ph-result {
+        margin-top: 20px;
+        padding: 16px 18px;
+        background: var(--paper);
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        color: var(--ink);
+    }
+
+    .ph-wrap a.back-link {
+        display: inline-block;
+        margin-top: 16px;
+        color: var(--teal);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .ph-wrap a.back-link:hover {
+        color: var(--amber-deep);
+    }
+
+    /* RESULT NOTE */
+    .ph-wrap .result-note {
+        margin-top: 20px;
+        padding: 16px 18px;
+        background: var(--paper);
+        border-left: 4px solid var(--teal);
+        border-radius: 6px;
+        color: var(--ink);
+    }
+    .ph-wrap .result-note h3 {
+        font-family: var(--font-display);
         font-size: 16px;
+        color: var(--teal);
+        margin-bottom: 8px;
+    }
+    .ph-wrap .result-note ul { padding-left: 18px; margin: 0; }
+    .ph-wrap .result-note ul li { padding: 2px 0; color: var(--ink-soft); }
+
+    /* HISTORY TABLE SECTION */
+    .ph-wrap .history-section h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        margin-bottom: 4px;
+        font-size: 19px;
+    }
+
+    .ph-wrap .history-section p {
+        color: var(--ink-soft);
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
+
+    .ph-wrap .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .ph-wrap .history-table th {
+        background: var(--ink);
+        color: #ffffff;
+        padding: 12px 16px;
+        text-align: left;
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
+
+    .ph-wrap .history-table td {
+        background: var(--surface);
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border-hair);
+        color: var(--ink-soft);
+        font-size: 13.5px;
+    }
+
+    .ph-wrap .history-table tr:hover td { background: rgba(184,118,58,0.06); }
+
+    .ph-wrap .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .ph-wrap .badge-amber { background: rgba(184,118,58,0.14); color: var(--amber-deep); }
+    .ph-wrap .badge-teal  { background: rgba(31,111,108,0.14); color: var(--teal); }
+
+    .ph-wrap .empty-state {
+        text-align: center;
+        padding: 25px;
+        color: #9aa4b2;
+        font-size: 14px;
+    }
+
+    .ph-wrap .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    .ph-wrap .btn-plot {
+        flex: 1;
+        background: var(--teal);
+        padding: 10px;
+        border: none;
+        color: #ffffff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+
+    .ph-wrap .btn-plot:hover { background: #175957; }
+
+    .ph-wrap .btn-clear {
+        flex: 1;
+        background: transparent;
+        padding: 10px;
+        border: 1px solid #c0392b;
+        color: #c0392b;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
+
+    .ph-wrap .btn-clear:hover { background: rgba(192,57,43,0.08); }
+
+    /* HISTORY GRAPH SECTION */
+    .ph-wrap .history-graph-section {
+        display: none; /* shown by JS when Plot is clicked */
+    }
+
+    .ph-wrap .history-graph-section h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        margin-bottom: 20px;
+        font-size: 18px;
         text-align: center;
     }
 
-    .container {
-        padding: 12px;
+    /* DIAGRAM */
+    .ph-wrap .diagram-section { text-align: center; }
+
+    .ph-wrap .diagram-section h2 {
+        font-family: var(--font-display);
+        font-size: 18px;
+        color: var(--ink);
+        margin-bottom: 16px;
     }
 
-    label {
-        font-size: 12px;
+    .ph-wrap .diagram-section img {
+        width: 100%;
+        max-width: 900px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
     }
 
-    input {
-        font-size: 13px;
+    /* BOTTOM ACTION — plain professional button, no gradient block */
+    .ph-wrap .ph-more-link {
+        text-align: center;
+        margin-top: 8px;
+        margin-bottom: 0;
     }
 
-    button {
-        font-size: 13px;
+    .ph-wrap .btn-more {
+        display: inline-block;
+        padding: 10px 22px;
+        border: 1px solid var(--ink);
+        color: var(--ink);
+        background: transparent;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .page-title h1 {
-        font-size: 22px;
+    .ph-wrap .btn-more:hover {
+        background: var(--ink);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.18);
     }
 
-    .page-title p {
-        font-size: 13px;
+    @media (max-width: 768px) {
+        .ph-wrap .ph-card { padding: 18px; }
+        .ph-wrap input[type="number"] { font-size: 14px; padding: 8px 12px !important; }
+        .ph-wrap .ph-btn { font-size: 14px; padding: 10px; }
     }
-
-    .relationship-container {
-        padding: 10px;
-    }
-
-    .info-card h2 {
-        font-size: 20px;
-    }
-
-    .info-card p {
-        font-size: 13px;
-    }
-
-    .formula {
-        font-size: 20px;
-    }
-}
 </style>
-</head>
+{% endblock %}
 
-<body>
+{% block content %}
+<div class="ph-wrap">
 
-<div class="header"> <a href="{% url 'logs:tordi' %}"><button style="margin-top:20px; padding: 30px; font-size: 30px;">Home</button></a></div>
+    <div class="ph-title">Porosity Calculator</div>
+    <div class="ph-subtitle">Density Log Method</div>
 
-<div class="header"> Porosity Calculator (Density Log Method)</div>
-
-<div class="container">
-
-    <form method="POST">
-        {% csrf_token %}
-
-        <label>Matrix Density (ρma)</label>
-        <input type="number" name="rho_ma" step="any">
-
-        <label>Fluid Density (ρf)</label>
-        <input type="number" name="rho_f" step="any">
-
-        <label>Bulk Density (ρb)</label>
-        <input type="number" name="rho_b" step="any">
-
-        <button type="submit">Calculate Porosity</button>
-    </form>
-
-    {% if result %}
-
-        <div class="result">
-
-            <strong>Porosity Result:</strong><br><br>
-
-            {{ result }}
-
-            <br><br>
-
-            <strong>
-                Percentage Porosity:
-            </strong>
-
-            {{ result|floatformat:4 }} × 100
-
+    <!-- FORMULA BANNER -->
+    <div class="formula-banner">
+        <div class="label">Density Porosity Formula</div>
+        <div class="formula">φ = (ρma − ρb) / (ρma − ρf)</div>
+        <div class="desc">
+            <strong>φ</strong> = Porosity (fraction) &nbsp;|&nbsp;
+            <strong>ρma</strong> = Matrix density (g/cm³) &nbsp;|&nbsp;
+            <strong>ρb</strong> = Bulk density (g/cm³) &nbsp;|&nbsp;
+            <strong>ρf</strong> = Fluid density (g/cm³)<br>
+            Derived from the density log. Higher bulk density relative to matrix density indicates lower porosity.
         </div>
-
-        <!-- DYNAMIC INTERPRETATION -->
-
-        <div class="result-note">
-
-            <h3>
-                 Dynamic Reservoir Interpretation
-            </h3>
-
-            <ul>
-
-                {% for item in interpretation %}
-                    <li>{{ item }}</li>
-                {% endfor %}
-
-            </ul>
-
-        </div>
-
-{% endif %}
-
-    <br>
-    <a href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
-</div>
-
-
-<!-- ===================================== -->
-<!-- GRAPH INPUT SECTION -->
-<!-- ===================================== -->
-
-<div class="relationship-wrapper">
-
-<div class="relationship-container">
-
-    <div class="page-title">
-        <h1>Porosity vs Bulk Density Plot</h1>
-
-        <p>
-            Enter porosity and bulk density values to generate
-            a reservoir relationship graph.
-        </p>
     </div>
 
-    <form method="POST">
+    <!-- CALCULATOR FORM -->
+    <div class="ph-card">
 
-        {% csrf_token %}
+        <form method="POST">
+            {% csrf_token %}
 
-        <table class="relationship-table">
+            <label>Matrix Density (ρma)</label>
+            <input type="number" name="rho_ma" step="any" placeholder="e.g. 2.65">
 
+            <label>Fluid Density (ρf)</label>
+            <input type="number" name="rho_f" step="any" placeholder="e.g. 1.00">
+
+            <label>Bulk Density (ρb)</label>
+            <input type="number" name="rho_b" step="any" placeholder="e.g. 2.35">
+
+            <button type="submit" class="ph-btn">Calculate Porosity</button>
+        </form>
+
+        {% if result %}
+
+            <div class="ph-result">
+                <strong>Porosity Result:</strong><br><br>
+                {{ result }}
+                <br><br>
+                <strong>Percentage Porosity:</strong>
+                {{ result|floatformat:4 }} × 100
+            </div>
+
+            <div class="result-note">
+                <h3>Dynamic Reservoir Interpretation</h3>
+                <ul>
+                    {% for item in interpretation %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+        {% endif %}
+
+        <a class="back-link" href="{% url 'logs:analysis_home' %}">⬅ Back to Dashboard</a>
+    </div>
+
+
+    <!-- HISTORY TABLE (latest 3 calculations) -->
+    <div class="ph-card history-section">
+
+        <h2>Recent Calculations</h2>
+        <p>Stores the last 5 calculations. Older entries are automatically removed when a new one is added.</p>
+
+        {% if history %}
+        <table class="history-table">
             <thead>
                 <tr>
-                    <th>Point</th>
-                    <th>Porosity</th>
-                    <th>Bulk Density</th>
+                    <th>#</th>
+                    <th>ρma (g/cm³)</th>
+                    <th>ρb (g/cm³)</th>
+                    <th>ρf (g/cm³)</th>
+                    <th>φ (fraction)</th>
+                    <th>φ (%)</th>
                 </tr>
             </thead>
-
             <tbody>
-
-                {% for i in "12345678" %}
-
+                {% for entry in history %}
                 <tr>
-
                     <td>{{ forloop.counter }}</td>
-
-                    <td>
-                        <input type="number"
-                               step="any"
-                               name="porosity_{{ forloop.counter }}"
-                               placeholder="Enter Porosity">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               step="any"
-                               name="bulk_{{ forloop.counter }}"
-                               placeholder="Enter Bulk Density">
-                    </td>
-
+                    <td>{{ entry.rho_ma }}</td>
+                    <td>{{ entry.rho_b }}</td>
+                    <td>{{ entry.rho_f }}</td>
+                    <td><span class="badge badge-amber">{{ entry.porosity }}</span></td>
+                    <td><span class="badge badge-teal">{{ entry.porosity_percent }}%</span></td>
                 </tr>
-
                 {% endfor %}
-
             </tbody>
-
         </table>
 
-        <button type="submit" style="margin-top:20px;">
-            Plot Graph
-        </button>
+        <div class="btn-row">
+            <!-- Plot button — triggers the history chart below -->
+            <button type="button" class="btn-plot" onclick="showHistoryGraph()">Plot Graph</button>
 
-    </form>
+            <!-- Clear history — posts to the clear view -->
+            <form method="POST" action="{% url 'logs:porosity_clear_history' %}" style="flex:1; margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="width:100%; margin-top:0;">
+                    Clear History
+                </button>
+            </form>
+        </div>
 
-</div>
+        {% else %}
+        <div class="empty-state">
+            No calculations yet. Enter values above and click <strong>Calculate Porosity</strong>.
+        </div>
+        {% endif %}
 
-</div>
-
-
-<!-- ===================================== -->
-<!-- GRAPH SECTION -->
-<!-- ===================================== -->
-
-<div class="relationship-wrapper">
-
-<div class="relationship-container">
-
-    <div class="page-title">
-        <h1>Porosity vs Bulk Density Graph</h1>
     </div>
 
-    <canvas id="porosityChart"></canvas>
-</div>
-</div>
+
+    <!-- HISTORY GRAPH (Porosity vs ρma) -->
+    <div class="ph-card history-graph-section" id="historyGraphSection">
+        <h2>Porosity (%) vs Matrix Density (ρma)</h2>
+        <canvas id="historyChart"></canvas>
+    </div>
 
 
     <!-- DIAGRAM -->
-
-    <div class="diagram-section">
-
-        <h2 style="color:#38bdf8;">
-            Graphical Density Relationship Diagram
-        </h2>
-
-        <img src="{% static 'img/porosity.png' %}"
-             alt="Density Relationship Diagram">
+    <div class="ph-card diagram-section">
+        <h2>Graphical Density Relationship Diagram</h2>
+        <img src="{% static 'img/porosity.png' %}" alt="Density Relationship Diagram">
     </div>
-</div>
+
+    <div class="ph-more-link">
+        <a href="{% url 'logs:porosity_details' %}">
+            <button type="button" class="btn-more">More About Porosity</button>
+        </a>
+    </div>
 
 </div>
+{% endblock %}
 
-<div class="header"> <a href="{% url 'logs:porosity_details' %}"><button style="margin-top:50px; padding: 30px; font-size: 30px;">More About Porosity</button></a></div>
-
-</body>
-
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    /* ── Porosity (%) vs Matrix Density (ρma) history chart ── */
+    const historyRhoMa    = {{ history_rho_ma|safe }};
+    const historyPorosity = {{ history_porosity|safe }};
 
-    const bulkDensity = {{ bulk_values|safe }};
-    const porosity = {{ porosity_values|safe }};
+    let historyChartInstance = null;
 
-    const ctx = document.getElementById('porosityChart');
+    function showHistoryGraph() {
+        const section = document.getElementById('historyGraphSection');
 
-    new Chart(ctx, {
+        if (historyRhoMa.length === 0) {
+            alert('No history data to plot. Calculate at least one porosity value first.');
+            return;
+        }
 
-        type: 'line',
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        data: {
+        if (historyChartInstance) {
+            historyChartInstance.destroy();
+        }
 
-            labels: bulkDensity,
+        const hCtx = document.getElementById('historyChart').getContext('2d');
 
-            datasets: [{
-
-                label: 'Porosity vs Bulk Density',
-
-                data: porosity,
-
-                borderWidth: 3,
-
-                fill: false,
-
-                tension: 0.3
-
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-                    labels: {
-                        color: 'white'
-                    }
-                }
+        historyChartInstance = new Chart(hCtx, {
+            type: 'line',
+            data: {
+                labels: historyRhoMa.map(v => v + ' g/cm³'),
+                datasets: [{
+                    label: 'Porosity (%) vs Matrix Density',
+                    data: historyPorosity,
+                    borderColor: '#1f6f6c',
+                    backgroundColor: 'rgba(31,111,108,0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#1f6f6c',
+                    pointBorderColor: '#fff',
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                }]
             },
-
-            scales: {
-
-                x: {
-
-                    title: {
-                        display: true,
-                        text: 'Bulk Density',
-                        color: 'white'
-                    },
-
-                    ticks: {
-                        color: 'white'
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#0a1a2f', font: { size: 13 } } },
+                    tooltip: {
+                        backgroundColor: '#0a1a2f',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e5e7eb',
+                        callbacks: {
+                            label: ctx => ' φ = ' + ctx.raw + '%'
+                        }
                     }
                 },
-
-                y: {
-
-                    title: {
-                        display: true,
-                        text: 'Porosity',
-                        color: 'white'
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Matrix Density ρma (g/cm³)', color: '#0a1a2f' },
+                        ticks: { color: '#43526b' },
+                        grid:  { color: '#e7eaee' }
                     },
-
-                    ticks: {
-                        color: 'white'
+                    y: {
+                        title: { display: true, text: 'Porosity φ (%)', color: '#0a1a2f' },
+                        ticks: { color: '#43526b', callback: v => v + '%' },
+                        grid:  { color: '#e7eaee' }
                     }
                 }
             }
-        }
-    });
-
+        });
+    }
 </script>
-
-</html>
+{% endblock %}

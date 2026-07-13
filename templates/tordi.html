@@ -1,11 +1,131 @@
 {% extends 'base.html' %}
 
+{% block title %}Final Year Project{% endblock %}
+
+{% block extra_css %}
+<style>
+    #petro-project-page * { box-sizing: border-box; }
+
+    #petro-project-page .petro-header {
+        background: var(--ink);
+        color: #ffffff;
+        padding: 44px 26px;
+        text-align: center;
+        border-radius: 10px;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 26px;
+    }
+
+    #petro-project-page .petro-header::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 4px;
+        background: linear-gradient(to right, var(--amber) 0 50%, var(--teal) 50% 100%);
+    }
+
+    #petro-project-page .petro-header h1 {
+        font-family: var(--font-display);
+        font-size: 1.9rem;
+        margin-bottom: 12px;
+        color: #ffffff;
+    }
+
+    #petro-project-page .petro-header p {
+        color: rgba(255,255,255,0.82);
+        font-size: 1rem;
+        max-width: 720px;
+        margin: 0 auto;
+    }
+
+    #petro-project-page .petro-header .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 10px;
+    }
+
+    #petro-project-page .petro-container {
+        max-width: 900px;
+        margin: 0 auto;
+        background: var(--surface);
+        padding: 34px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--teal);
+    }
+
+    #petro-project-page h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        font-size: 1.35rem;
+        margin-top: 34px;
+        margin-bottom: 14px;
+        padding-top: 8px;
+        border-top: 1px solid var(--border-hair);
+    }
+
+    #petro-project-page h2:first-of-type {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+
+    #petro-project-page .petro-info {
+        background: var(--paper);
+        border-radius: 8px;
+        padding: 18px 22px;
+    }
+
+    #petro-project-page .petro-info p {
+        font-size: 15px;
+        margin: 8px 0;
+        color: var(--ink-soft);
+    }
+
+    #petro-project-page .petro-info strong {
+        color: var(--ink);
+        font-weight: 600;
+    }
+
+    #petro-project-page .petro-project-section {
+        margin-top: 6px;
+        line-height: 1.8;
+        font-size: 15px;
+        color: var(--ink-soft);
+    }
+
+    #petro-project-page .petro-project-section p { margin-bottom: 14px; }
+
+    #petro-project-page .petro-footer {
+        text-align: center;
+        padding: 16px;
+        background: var(--ink);
+        color: rgba(255,255,255,0.85);
+        margin-top: 26px;
+        border-radius: 10px;
+        font-size: 13.5px;
+    }
+
+    @media (max-width: 768px) {
+        #petro-project-page .petro-header { padding: 32px 20px; }
+        #petro-project-page .petro-header h1 { font-size: 1.5rem; }
+        #petro-project-page .petro-container { padding: 22px; }
+        #petro-project-page h2 { font-size: 1.15rem; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div id="petro-project-page">
 
     <header class="petro-header">
-        <h1>Final Year Project</h1>
-        <p><strong> <b style="font-size: 20px;">Topic:</b> Development of a Computer Application for Reservoir Petrophysical Evaluation Using Well Log Data</strong></p>
+        <div class="eyebrow">Final Year Project</div>
+        <h1>Development of a Computer Application for Reservoir Petrophysical Evaluation Using Well Log Data</h1>
+        <p>An automated system for petrophysical property estimation from LAS well log data.</p>
     </header>
 
     <div class="petro-container">
@@ -21,103 +141,49 @@
         <h2>What the Project is All About</h2>
         <div class="petro-project-section">
             <p>
-                Reservoir petrophysical evaluation is a key aspect of petroleum engineering 
-                that involves determining key formation properties such as porosity, permeability, 
-                and water saturation. These properties help engineers estimate hydrocarbon reserves 
+                Reservoir petrophysical evaluation is a key aspect of petroleum engineering
+                that involves determining key formation properties such as porosity, permeability,
+                and water saturation. These properties help engineers estimate hydrocarbon reserves
                 and evaluate the productivity potential of an oil or gas reservoir.
             </p>
 
             <p>
-                Well logging provides continuous measurements of subsurface formations, and 
-                the data obtained are commonly stored in LAS (Log ASCII Standard) format. 
-                Traditionally, the interpretation of well log data and computation of 
-                petrophysical parameters are performed manually or using expensive 
+                Well logging provides continuous measurements of subsurface formations, and
+                the data obtained are commonly stored in LAS (Log ASCII Standard) format.
+                Traditionally, the interpretation of well log data and computation of
+                petrophysical parameters are performed manually or using expensive
                 commercial software.
             </p>
 
             <p>
-                This project focuses on developing a computer-based web application using 
-                the Django framework to automate the evaluation of reservoir petrophysical 
-                properties. The system will allow users to upload LAS files, process the 
-                well log data, and compute important parameters such as porosity, water 
-                saturation (using Archie’s equation), and permeability (using empirical correlations). 
-                Also plot graphs of some certain points and data's.
+                This project focuses on developing a computer-based web application using
+                the Django framework to automate the evaluation of reservoir petrophysical
+                properties. The system will allow users to upload LAS files, process the
+                well log data, and compute important parameters such as porosity, water
+                saturation (using Archie's equation), and permeability (using empirical correlations).
+                It also plots graphs of key data points and parameters.
             </p>
 
             <p>
-                The developed application aims to improve computational efficiency, reduce 
-                human error, and provide an accessible and cost-effective tool for academic 
-                and basic reservoir evaluation purposes. It also enhances the understanding 
+                The developed application aims to improve computational efficiency, reduce
+                human error, and provide an accessible and cost-effective tool for academic
+                and basic reservoir evaluation purposes. It also enhances the understanding
                 of well log interpretation and digital reservoir characterization.
             </p>
         </div>
 
-        <!-- Aim an objective -->
+        <h2>Objectives</h2>
         <div class="petro-project-section">
-            <h2>Objectives:</h2>
-            <p>1. Design and implement a computer apllication capable of processing LAS files.</p>
+            <p>1. Design and implement a computer application capable of processing LAS files.</p>
             <p>2. Extract relevant log parameters such as density and resistivity from well log data.</p>
-            <p>3. Estimate reservior porosity using density log interpretation methods.</p>
+            <p>3. Estimate reservoir porosity using density log interpretation methods.</p>
             <p>4. Compute water saturation using Archie's equations.</p>
             <p>5. Estimate permeability using empirical correlations.</p>
-            <p>6. Present computed petrophysical parameters graphically with respect to depth.</p>
+            <p>6. Present computed petrophysical parameters graphically.</p>
             <p>7. Validate the computed results using sample well log data.</p>
         </div>
 
     </div>
 
 </div>
-
-<style>
-/* EVERYTHING SCOPED UNDER #petro-project-page */
-#petro-project-page {
-    font-family: Arial, sans-serif;
-    background-color: #eef2f7;
-    padding: 20px 0;
-}
-
-#petro-project-page .petro-header {
-    background-color: #002147;
-    color: white;
-    padding: 25px;
-    text-align: center;
-    border-radius: 5px;
-}
-
-#petro-project-page .petro-container {
-
-    max-width: 1000px;
-    margin: 30px auto;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-#petro-project-page h2 {
-    color: #002147;
-    margin-top: 30px;
-}
-
-#petro-project-page .petro-info p {
-    font-size: 18px;
-    margin: 6px 0;
-}
-
-#petro-project-page .petro-project-section {
-    margin-top: 20px;
-    line-height: 1.8;
-    font-size: 16px;
-    text-align: justify;
-}
-
-#petro-project-page .petro-footer {
-    text-align: center;
-    padding: 15px;
-    background-color: #002147;
-    color: white;
-    margin-top: 30px;
-    border-radius: 5px;
-}
-</style>
 {% endblock %}

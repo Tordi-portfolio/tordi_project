@@ -1,572 +1,486 @@
 {% extends 'base.html' %}
 
+{% block title %}LAS File Guide{% endblock %}
+
+{% block extra_css %}
+<style>
+    .las-wrap * { box-sizing: border-box; }
+
+    /* =========================================
+       HERO
+    ========================================= */
+    .las-hero {
+        background: var(--ink);
+        border-radius: 12px;
+        padding: 56px 30px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 28px;
+    }
+
+    .las-hero::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: 0;
+        height: 4px;
+        background: linear-gradient(to right, var(--amber) 0 50%, var(--teal) 50% 100%);
+    }
+
+    .las-hero .eyebrow {
+        font-family: var(--font-mono);
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--amber);
+        margin-bottom: 12px;
+    }
+
+    .las-hero h1 {
+        font-family: var(--font-display);
+        color: #ffffff;
+        font-size: 2.1rem;
+        margin-bottom: 12px;
+        letter-spacing: -0.01em;
+    }
+
+    .las-hero p {
+        color: rgba(255,255,255,0.72);
+        font-size: 1.05rem;
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    /* =========================================
+       ACTION BUTTONS
+    ========================================= */
+    .las-actions {
+        text-align: center;
+        margin: 28px 0;
+    }
+
+    .las-btn {
+        display: inline-block;
+        background: var(--ink);
+        color: #ffffff;
+        font-size: 15px;
+        font-weight: 500;
+        padding: 12px 30px;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+    }
+
+    .las-btn:hover {
+        background: #001733;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.22);
+        color: #ffffff;
+    }
+
+    .las-btn:active { transform: translateY(1px); }
+
+    .las-divider {
+        border: none;
+        border-top: 1px solid var(--border-color);
+        margin: 32px 0;
+    }
+
+    /* =========================================
+       DOWNLOAD LIST
+    ========================================= */
+    .las-downloads {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--teal);
+        border-radius: 10px;
+        padding: 26px;
+        margin-bottom: 10px;
+    }
+
+    .las-downloads h3 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        font-size: 1.05rem;
+        margin-bottom: 16px;
+    }
+
+    .las-download-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+        gap: 12px;
+    }
+
+    .las-download-link {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        padding: 12px 16px;
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        text-decoration: none;
+        font-size: 13.5px;
+        font-weight: 500;
+        transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+    }
+
+    .las-download-link:hover {
+        border-color: var(--teal);
+        background: rgba(31,111,108,0.06);
+        color: var(--teal);
+        transform: translateY(-2px);
+    }
+
+    /* =========================================
+       TABLE OF CONTENTS (replaces duplicate navbar)
+    ========================================= */
+    .las-toc {
+        position: sticky;
+        top: 10px;
+        z-index: 20;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin-bottom: 28px;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .las-toc .toc-label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+        margin-right: 12px;
+    }
+
+    .las-toc a {
+        display: inline-block;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink-soft);
+        text-decoration: none;
+        padding: 6px 12px;
+        border-radius: 20px;
+        margin-right: 4px;
+        transition: background 0.2s ease, color 0.2s ease;
+        background-image: none;
+    }
+
+    .las-toc a:hover {
+        background: rgba(184,118,58,0.10);
+        color: var(--amber-deep);
+    }
+
+    /* =========================================
+       ARTICLE BODY
+    ========================================= */
+    .las-article {
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 40px;
+    }
+
+    .las-article h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        font-size: 1.55rem;
+        margin-top: 44px;
+        margin-bottom: 14px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-hair);
+        scroll-margin-top: 90px;
+    }
+
+    .las-article h2:first-child {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+
+    .las-article h3 {
+        font-family: var(--font-display);
+        color: var(--amber-deep);
+        font-size: 1.15rem;
+        margin-top: 22px;
+        margin-bottom: 10px;
+    }
+
+    .las-article p {
+        color: var(--ink-soft);
+        font-size: 1rem;
+        margin-bottom: 14px;
+    }
+
+    .las-article ul,
+    .las-article ol {
+        margin: 0 0 16px 22px;
+        color: var(--ink-soft);
+    }
+
+    .las-article li { margin-bottom: 6px; }
+
+    .las-article strong { color: var(--ink); }
+
+    /* Roadmap card */
+    .las-roadmap {
+        background: var(--paper);
+        border-left: 4px solid var(--amber);
+        border-radius: 8px;
+        padding: 22px 26px;
+        margin-bottom: 10px;
+    }
+
+    .las-roadmap h3 {
+        margin-top: 0;
+        color: var(--amber-deep);
+    }
+
+    .las-roadmap ol { margin-bottom: 0; }
+
+    /* Code block */
+    .las-article code {
+        display: block;
+        background: var(--ink);
+        color: #7fe3c6;
+        font-family: var(--font-mono);
+        font-size: 13px;
+        line-height: 1.8;
+        padding: 20px 22px;
+        border-radius: 8px;
+        white-space: pre-wrap;
+        margin: 16px 0 22px;
+    }
+
+    /* =========================================
+       RESPONSIVE
+    ========================================= */
+    @media (max-width: 768px) {
+        .las-hero { padding: 40px 20px; }
+        .las-hero h1 { font-size: 1.6rem; }
+        .las-article { padding: 22px; }
+        .las-article h2 { font-size: 1.3rem; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to LAS File Reader</title>
+<div class="las-wrap">
 
-  <style>
-/* =========================================
-   GLOBAL RESET + UNIQUE DESIGN SYSTEM
-========================================= */
-
-:root {
-  --bg: #0a0a0a;
-  --panel: #111111;
-  --panel-2: #151b2c;
-  --text: #e6e6e6;
-  --muted: #b8b8b8;
-  --primary: #00d4ff;
-  --secondary: #0077ff;
-  --accent: #2a5298;
-  --gold: #ffcc00;
-}
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.8;
-  margin: 0;
-  padding: 0;
-  scroll-behavior: smooth;
-}
-
-/* =========================================
-   NAVBAR (RE-DESIGNED - MORE MODERN)
-========================================= */
-
-.las-navbar {
-  background: linear-gradient(135deg, #0b0f1a, #0f172a, #1e3a8a);
-  padding: 14px 25px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(10px);
-}
-
-/* Logo */
-.las-logo {
-  color: #ffffff;
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-decoration: none;
-  transition: 0.3s ease;
-  position: relative;
-}
-/* Logo hover underline effect */
-.las-logo::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -5px;
-  width: 0%;
-  height: 2px;
-  background: #00d4ff;
-  transition: 0.3s ease;
-}
-.las-logo:hover {
-  color: #00d4ff;
-}
-
-.las-logo:hover::after {
-  width: 100%;
-}
-
-/* Menu */
-.las-menu {
-  display: flex;
-  list-style: none;
-  gap: 18px;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-}
-
-/* Links */
-.las-menu li a {
-  color: #e5e7eb;
-  text-decoration: none;
-  font-size: 15px;
-  font-weight: 500;
-  padding: 8px 14px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-/* Hover effect */
-.las-menu li a:hover {
-  background: rgba(0, 212, 255, 0.12);
-  color: #00d4ff;
-  transform: translateY(-2px);
-}
-
-/* Animated underline */
-.las-menu li a::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 4px;
-  width: 0%;
-  height: 2px;
-  background: #00d4ff;
-  transition: 0.3s ease;
-  transform: translateX(-50%);
-}
-
-.las-menu li a:hover::after {
-  width: 70%;
-}
-
-/* Toggle button */
-.las-toggle {
-  display: none;
-  flex-direction: column;
-  cursor: pointer;
-}
-
-.las-toggle span {
-  height: 3px;
-  width: 28px;
-  background: #ffffff;
-  margin: 4px 0;
-  border-radius: 5px;
-  transition: all 0.3s ease;
-}
-
-/* Mobile */
-@media (max-width: 768px) {
-  .las-menu {
-    position: absolute;
-    top: 65px;
-    right: -100%;
-    background: rgba(10, 15, 31, 0.98);
-    backdrop-filter: blur(12px);
-    flex-direction: column;
-    width: 240px;
-    padding: 20px;
-    border-radius: 12px;
-    gap: 12px;
-    transition: right 0.4s ease-in-out;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  }
-}
-  .las-menu.show {
-    right: 15px;
-  }
-
-  .las-menu li a {
-    width: 100%;
-    text-align: left;
-  }
-
-  .las-toggle {
-    display: flex;
-  }
-
-/* =========================================
-   HEADER (MODERN GLASS STYLE)
-========================================= */
-
-header {
-  background: radial-gradient(circle at top, #1a1a1a, #0d0d0d);
-  text-align: center;
-  padding: 60px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-
-header h1 {
-  font-size: 2.6rem;
-  margin-bottom: 10px;
-  letter-spacing: 1px;
-}
-
-header p {
-  font-size: 1.2rem;
-  color: var(--muted);
-}
-
-/* =========================================
-   MAIN CONTENT
-========================================= */
-
-main {
-  max-width: 1000px;
-  margin: auto;
-  padding: 50px 22px;
-}
-
-h2 {
-  color: var(--primary);
-  margin-top: 55px;
-  font-size: 1.9rem;
-}
-
-h3 {
-  color: var(--gold);
-  font-size: 1.3rem;
-}
-
-p {
-  font-size: 1.05rem;
-  color: #dcdcdc;
-}
-
-ul, ol {
-  margin-left: 25px;
-}
-
-/* =========================================
-   ROADMAP BOX (IMPROVED CARD STYLE)
-========================================= */
-
-.roadmap {
-  background: linear-gradient(145deg, #111, #0d0d0d);
-  padding: 22px;
-  border-left: 4px solid var(--primary);
-  border-radius: 10px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  margin: 30px 0;
-}
-
-/* =========================================
-   BUTTONS (MORE PREMIUM LOOK)
-========================================= */
-
-.las-btn-container {
-  text-align: center;
-  margin: 45px 0;
-}
-
-.las-btn {
-  display: inline-block;
-  background: linear-gradient(90deg, var(--secondary), var(--primary));
-  color: white;
-  font-size: 1.05rem;
-  font-weight: 600;
-  padding: 14px 38px;
-  border-radius: 50px;
-  text-decoration: none;
-  box-shadow: 0 10px 25px rgba(0, 212, 255, 0.25);
-  transition: 0.3s ease;
-}
-
-.las-btn:hover {
-  transform: translateY(-3px) scale(1.03);
-  box-shadow: 0 15px 30px rgba(0, 212, 255, 0.35);
-}
-
-/* DOWNLOAD BUTTONS */
-.unique-nav-container {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin: 30px 0;
-}
-
-.unique-btn {
-  background: linear-gradient(135deg, #1e3c72, #0b2a5a);
-  color: white;
-  padding: 12px 20px;
-  border-radius: 25px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: 0.3s;
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-.unique-btn:hover {
-  background: linear-gradient(135deg, #0077ff, #1e3c72);
-  transform: translateX(5px);
-}
-
-/* =========================================
-   CODE BLOCK
-========================================= */
-
-code {
-  background: #0d0d0d;
-  padding: 12px;
-  border-radius: 8px;
-  display: block;
-  white-space: pre-wrap;
-  color: #00ffcc;
-  border-left: 3px solid var(--primary);
-}
-
-/* =========================================
-   RESPONSIVE DESIGN
-========================================= */
-
-@media (max-width: 768px) {
-
-  header h1 {
-    font-size: 1.8rem;
-  }
-
-  header p {
-    font-size: 1rem;
-  }
-
-  main {
-    padding: 20px;
-  }
-
-  .las-menu {
-    position: absolute;
-    top: 60px;
-    right: -100%;
-    background: #0a0f1f;
-    flex-direction: column;
-    width: 220px;
-    padding: 20px;
-    transition: 0.3s ease;
-  }
-
-  .las-menu.show {
-    right: 0;
-  }
-
-  .las-toggle {
-    display: flex;
-  }
-}
-
-  </style>
-</head>
-<body>
-  <nav class="las-navbar">
-    <a href="#" class="las-logo">Well Log Data App</a>
-    <ul class="las-menu" id="lasMenu">
-      <li><a href="{% url 'logs:index' %}#Introduction">Introduction</a></li>
-      <li><a href="{% url 'logs:index' %}#History">Historical Development of LAS Files</a></li>
-      <li><a href="{% url 'logs:index' %}#Importance">Importance in Petroleum Engineering</a></li>
-      <li><a href="{% url 'logs:index' %}#Structure">Structure of LAS Files</a></li>
-      <li><a href="{% url 'logs:index' %}#Versions">Versions and Types</a></li>
-      <li><a href="{% url 'logs:index' %}#Applications">Applications in Oil & Gas Industry</a></li>
-      <li><a href="{% url 'logs:index' %}#Avantages">Advantages of LAS Files</a></li>
-      <li><a href="{% url 'logs:index' %}#Limitations">Limitations of LAS Files</a></li>
-      <li><a href="{% url 'logs:index' %}#Alternatives">Alternatives and Modern Formats</a></li>
-      <li><a href="{% url 'logs:index' %}#Case_study">Case Studies and Practical Examples</a></li>
-      <li><a href="{% url 'logs:index' %}#Conclusion">Conclusion</a></li>
-    </ul>
-    <div class="las-toggle" id="lasToggle">
-      <span></span>
-      <span></span>
-      <span></span>
+    <!-- HERO -->
+    <div class="las-hero">
+        <div class="eyebrow">Reference Guide</div>
+        <h1>The LAS File Format, Explained</h1>
+        <p>A comprehensive guide to the Log ASCII Standard used throughout well log analysis and petroleum engineering.</p>
     </div>
-  </nav>
 
-<header>
-  <h1>Welcome to the LAS File Reader Website</h1>
-  <p>A Comprehensive Guide to LAS (Log ASCII Standard) Files</p>
-</header>
+    <div class="las-actions">
+        <a href="{% url 'logs:home' %}" class="las-btn">Start Reading LAS Files</a>
+    </div>
 
-<div class="las-btn-container">
-  <a href="{% url 'logs:home' %}" class="las-btn">Start Reading LAS Files</a>
+    <hr class="las-divider">
+
+    <!-- DOWNLOADS -->
+    <div class="las-downloads">
+        <h3>Sample LAS Files</h3>
+        <div class="las-download-grid">
+            <a href="https://www.minnelusa.com/sample_data/4771-36-SESE.las" class="las-download-link">📄 LAS File — 4771-36-SESE</a>
+            <a href="https://www.minnelusa.com/sample_data/4969-06-NWNE.las" class="las-download-link">📄 LAS File — 4969-06-NWNE</a>
+            <a href="https://www.minnelusa.com/sample_data/5069-31-NWSW.las" class="las-download-link">📄 LAS File — 5069-31-NWSW</a>
+            <a href="https://www.minnelusa.com/sample_data/5070-14-SESW.las" class="las-download-link">📄 LAS File — 5070-14-SESW</a>
+            <a href="https://www.minnelusa.com/sample_data/LAS_Sample_API.zip" class="las-download-link">📦 Sample Pack — API (4 files)</a>
+            <a href="https://www.minnelusa.com/sample_data/LAS_Sample_Locn.zip" class="las-download-link">📦 Sample Pack — Location (4 files)</a>
+        </div>
+    </div>
+
+    <hr class="las-divider">
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="las-toc">
+        <span class="toc-label">Jump to</span>
+        <a href="#Introduction">Introduction</a>
+        <a href="#History">History</a>
+        <a href="#Importance">Importance</a>
+        <a href="#Structure">Structure</a>
+        <a href="#Versions">Versions</a>
+        <a href="#Applications">Applications</a>
+        <a href="#Advantages">Advantages</a>
+        <a href="#Limitations">Limitations</a>
+        <a href="#Alternatives">Alternatives</a>
+        <a href="#Case_study">Case Studies</a>
+        <a href="#Conclusion">Conclusion</a>
+    </div>
+
+    <!-- ARTICLE -->
+    <div class="las-article">
+
+        <div class="las-roadmap">
+            <h3>Roadmap of This Guide</h3>
+            <ol>
+                <li>Introduction</li>
+                <li>Historical Development of LAS Files</li>
+                <li>Importance in Petroleum Engineering</li>
+                <li>Structure of LAS Files</li>
+                <li>Versions and Types</li>
+                <li>Applications in Oil &amp; Gas Industry</li>
+                <li>Advantages of LAS Files</li>
+                <li>Limitations of LAS Files</li>
+                <li>Alternatives and Modern Formats</li>
+                <li>Case Studies and Practical Examples</li>
+                <li>Conclusion</li>
+            </ol>
+        </div>
+
+        <h2 id="Introduction">1. Introduction</h2>
+        <p>
+            LAS, short for <strong>Log ASCII Standard</strong>, is a widely used digital file format for
+            storing well log data in the petroleum industry. It was introduced to provide a universal
+            standard for sharing and analyzing logging information, especially across different companies
+            and software platforms. Before LAS, engineers and geologists often struggled with proprietary
+            binary formats, which limited collaboration.
+        </p>
+        <p>
+            The importance of LAS files lies not only in their widespread adoption but also in their
+            simplicity. Since LAS files are plain text, they can be opened with any text editor, yet
+            they carry detailed geological and petrophysical information essential for exploration and
+            production decisions. This makes them both accessible and powerful.
+        </p>
+
+        <h2 id="History">2. Historical Development of LAS Files</h2>
+        <p>
+            The Canadian Well Logging Society (CWLS) first introduced LAS in the late 1980s. The idea
+            was to create a format that was both <em>human-readable</em> and <em>machine-readable</em>.
+            Over time, several versions have been released:
+        </p>
+        <ul>
+            <li><strong>LAS 1.2:</strong> The earliest format, very simple but limited.</li>
+            <li><strong>LAS 2.0:</strong> Became the most widely used standard; supports well, curve, and parameter information.</li>
+            <li><strong>LAS 3.0:</strong> Designed to handle more complex datasets, including multi-well information, though less universally adopted.</li>
+        </ul>
+        <p>
+            Despite the rise of more advanced formats such as DLIS and WITSML, LAS remains the
+            industry's workhorse due to its reliability and ease of use.
+        </p>
+
+        <h2 id="Importance">3. Importance of LAS Files in Petroleum Engineering</h2>
+        <p>
+            Petroleum engineering relies heavily on well logs. These logs record measurements from
+            downhole tools that capture information about the formation surrounding a borehole.
+            Parameters such as gamma ray, resistivity, porosity, neutron, sonic travel time, and density
+            provide a window into the subsurface.
+        </p>
+        <p>
+            LAS files serve as the universal container for these logs. Their importance includes:
+        </p>
+        <ul>
+            <li><strong>Standardization:</strong> Ensures compatibility between different log analysis software.</li>
+            <li><strong>Data Exchange:</strong> Allows easy sharing of well data between operators, service companies, and academia.</li>
+            <li><strong>Research and Education:</strong> LAS files are used widely in universities to teach students reservoir evaluation and petrophysics.</li>
+        </ul>
+
+        <h2 id="Structure">4. Structure of LAS Files</h2>
+        <p>
+            A LAS file is divided into <strong>sections</strong>, each beginning with a tilde (~).
+            Here's the breakdown:
+        </p>
+        <ul>
+            <li><strong>~Version Information:</strong> Specifies the LAS format version.</li>
+            <li><strong>~Well Information:</strong> Metadata such as well name, location, operator, and date.</li>
+            <li><strong>~Curve Information:</strong> Describes each log curve, its mnemonic, unit, and explanation.</li>
+            <li><strong>~Parameter Information:</strong> Optional section for tool settings or environmental conditions.</li>
+            <li><strong>~Other Information:</strong> Notes or remarks.</li>
+            <li><strong>~ASCII Data:</strong> The actual depth and log data values.</li>
+        </ul>
+
+        <h3>Example LAS Snippet</h3>
+        <code>~Version Information
+VERS. 2.0 : CWLS LAS format version
+WRAP. NO  : One line per depth step
+
+~Well Information
+STRT.M  100.0 : START DEPTH
+STOP.M  500.0 : STOP DEPTH
+STEP.M  0.5   : STEP INTERVAL
+NULL. -999.25 : NULL VALUE
+
+~Curve Information
+DEPT.M : Depth
+GR.API : Gamma Ray
+RHOB.G/C3 : Bulk Density
+
+~ASCII Data
+100.0  45.6  2.45
+100.5  47.1  2.48
+101.0  49.3  2.52</code>
+
+        <h2 id="Versions">5. Versions and Types of LAS Files</h2>
+        <p>
+            As mentioned earlier, LAS has gone through several versions. While LAS 2.0 is the most
+            widely used, LAS 3.0 attempted to modernize the format. However, adoption has been slow
+            due to compatibility issues with older software.
+        </p>
+
+        <h2 id="Applications">6. Applications in Oil &amp; Gas Industry</h2>
+        <p>LAS files are applied in many areas, including:</p>
+        <ul>
+            <li><strong>Reservoir Characterization:</strong> Determining lithology, porosity, and fluid type.</li>
+            <li><strong>Formation Evaluation:</strong> Estimating hydrocarbon saturation.</li>
+            <li><strong>Geological Studies:</strong> Correlating formations across wells.</li>
+            <li><strong>Drilling Operations:</strong> Identifying over-pressured zones and guiding drilling.</li>
+            <li><strong>Seismic Integration:</strong> Tying well logs to seismic data for structural mapping.</li>
+        </ul>
+
+        <h2 id="Advantages">7. Advantages of LAS Files</h2>
+        <ul>
+            <li>Simple text format, human-readable.</li>
+            <li>Compatible with almost all log analysis software.</li>
+            <li>Supports metadata and numerical data in one file.</li>
+            <li>Free and open standard.</li>
+        </ul>
+
+        <h2 id="Limitations">8. Limitations of LAS Files</h2>
+        <ul>
+            <li>Large file sizes compared to binary formats.</li>
+            <li>Errors can occur if formatting rules are not followed strictly.</li>
+            <li>Limited handling of very complex datasets.</li>
+        </ul>
+
+        <h2 id="Alternatives">9. Alternatives and Modern Formats</h2>
+        <p>In addition to LAS, other formats exist:</p>
+        <ul>
+            <li><strong>DLIS (Digital Log Interchange Standard):</strong> Binary format, efficient but less human-readable.</li>
+            <li><strong>WITSML:</strong> XML-based standard for drilling and production data.</li>
+            <li><strong>CSV/JSON:</strong> Sometimes used for simplified log storage.</li>
+        </ul>
+
+        <h2 id="Case_study">10. Case Studies and Practical Examples</h2>
+        <h3>Case Study 1: Reservoir Evaluation</h3>
+        <p>
+            An LAS file containing gamma ray, density, and neutron logs can be used to estimate shale
+            content and porosity in a sandstone reservoir. This helps determine net pay zones and
+            hydrocarbon potential.
+        </p>
+
+        <h3>Case Study 2: Academic Research</h3>
+        <p>
+            Students in petroleum engineering often download free LAS files from open data repositories.
+            By analyzing them with software like Petrel or LASIO in Python, they learn key skills in
+            petrophysics and data interpretation.
+        </p>
+
+        <h2 id="Conclusion">11. Conclusion</h2>
+        <p>
+            LAS files continue to play a crucial role in the petroleum industry. Despite newer formats,
+            their simplicity, reliability, and universal acceptance ensure their relevance. For
+            engineers, geoscientists, and students alike, LAS remains the foundation of well log
+            interpretation.
+        </p>
+
+    </div>
+
 </div>
-<hr>
-
-<div class="las-btn-container">
-  <a href="" class="las-btn">Download Las Files In The Below Buttons</a>
-</div>
-<div class="unique-nav-container">
-    <a href="https://www.minnelusa.com/sample_data/4771-36-SESE.las" class="unique-btn">Las File</a>
-    <a href="https://www.minnelusa.com/sample_data/4969-06-NWNE.las" class="unique-btn">Las File</a>
-    <a href="https://www.minnelusa.com/sample_data/5069-31-NWSW.las" class="unique-btn">Las File</a>
-    <a href="https://www.minnelusa.com/sample_data/5070-14-SESW.las" class="unique-btn">Las File</a>
-    <a href="https://www.minnelusa.com/sample_data/LAS_Sample_API.zip" class="unique-btn">Las File, Unzip an use file, Contains 4 files</a>
-    <a href="https://www.minnelusa.com/sample_data/LAS_Sample_Locn.zip" class="unique-btn">Las File, Unzip an use file, Contains 4 files</a>
-</div>
-<hr>
-
-
-<main>
-
-  <section class="roadmap">
-    <h3>Roadmap of This Guide</h3>
-    <ol>
-      <li>Introduction</li>
-      <li>Historical Development of LAS Files</li>
-      <li>Importance in Petroleum Engineering</li>
-      <li>Structure of LAS Files</li>
-      <li>Versions and Types</li>
-      <li>Applications in Oil & Gas Industry</li>
-      <li>Advantages of LAS Files</li>
-      <li>Limitations of LAS Files</li>
-      <li>Alternatives and Modern Formats</li>
-      <li>Case Studies and Practical Examples</li>
-      <li>Conclusion</li>
-    </ol>
-  </section>
-
-  <h2 id="Introduction">1. Introduction</h2>
-  <p>
-    LAS, short for <strong>Log ASCII Standard</strong>, is a widely used digital file format for 
-    storing well log data in the petroleum industry. It was introduced to provide a universal 
-    standard for sharing and analyzing logging information, especially across different companies 
-    and software platforms. Before LAS, engineers and geologists often struggled with proprietary 
-    binary formats, which limited collaboration. 
-  </p>
-  <p>
-    The importance of LAS files lies not only in their widespread adoption but also in their 
-    simplicity. Since LAS files are plain text, they can be opened with any text editor, yet 
-    they carry detailed geological and petrophysical information essential for exploration and 
-    production decisions. This makes them both accessible and powerful.
-  </p>
-
-  <h2 id="History">2. Historical Development of LAS Files</h2>
-  <p>
-    The Canadian Well Logging Society (CWLS) first introduced LAS in the late 1980s. The idea 
-    was to create a format that was both <em>human-readable</em> and <em>machine-readable</em>. 
-    Over time, several versions have been released:
-  </p>
-  <ul>
-    <li><strong>LAS 1.2:</strong> The earliest format, very simple but limited.</li>
-    <li><strong>LAS 2.0:</strong> Became the most widely used standard; supports well, curve, and parameter information.</li>
-    <li><strong>LAS 3.0:</strong> Designed to handle more complex datasets, including multi-well information, though less universally adopted.</li>
-  </ul>
-  <p>
-    Despite the rise of more advanced formats such as DLIS and WITSML, LAS remains the 
-    industry’s workhorse due to its reliability and ease of use.
-  </p>
-
-  <h2 id="Importance">3. Importance of LAS Files in Petroleum Engineering</h2>
-  <p>
-    Petroleum engineering relies heavily on well logs. These logs record measurements from 
-    downhole tools that capture information about the formation surrounding a borehole. 
-    Parameters such as gamma ray, resistivity, porosity, neutron, sonic travel time, and density 
-    provide a window into the subsurface.
-  </p>
-  <p>
-    LAS files serve as the universal container for these logs. Their importance includes:
-  </p>
-  <ul>
-    <li><strong>Standardization:</strong> Ensures compatibility between different log analysis software.</li>
-    <li><strong>Data Exchange:</strong> Allows easy sharing of well data between operators, service companies, and academia.</li>
-    <li><strong>Research and Education:</strong> LAS files are used widely in universities to teach students reservoir evaluation and petrophysics.</li>
-  </ul>
-
-  <h2 id="Structure">4. Structure of LAS Files</h2>
-  <p>
-    A LAS file is divided into <strong>sections</strong>, each beginning with a tilde (~). 
-    Here’s the breakdown:
-  </p>
-  <ul>
-    <li><strong>~Version Information:</strong> Specifies the LAS format version.</li>
-    <li><strong>~Well Information:</strong> Metadata such as well name, location, operator, and date.</li>
-    <li><strong>~Curve Information:</strong> Describes each log curve, its mnemonic, unit, and explanation.</li>
-    <li><strong>~Parameter Information:</strong> Optional section for tool settings or environmental conditions.</li>
-    <li><strong>~Other Information:</strong> Notes or remarks.</li>
-    <li><strong>~ASCII Data:</strong> The actual depth and log data values.</li>
-  </ul>
-
-  <h3>Example LAS Snippet:</h3>
-  <code>
-~Version Information<br>
-VERS. 2.0 : CWLS LAS format version<br>
-WRAP. NO  : One line per depth step<br><br>
-
-~Well Information<br>
-STRT.M  100.0 : START DEPTH<br>
-STOP.M  500.0 : STOP DEPTH<br>
-STEP.M  0.5   : STEP INTERVAL<br>
-NULL. -999.25 : NULL VALUE<br><br>
-
-~Curve Information<br>
-DEPT.M : Depth<br>
-GR.API : Gamma Ray<br>
-RHOB.G/C3 : Bulk Density<br><br>
-
-~ASCII Data<br>
-100.0  45.6  2.45<br>
-100.5  47.1  2.48<br>
-101.0  49.3  2.52
-  </code>
-
-  <h2 id="Versions">5. Versions and Types of LAS Files</h2>
-  <p>
-    As mentioned earlier, LAS has gone through several versions. While LAS 2.0 is the most 
-    widely used, LAS 3.0 attempted to modernize the format. However, adoption has been slow 
-    due to compatibility issues with older software.
-  </p>
-
-  <h2 id="Applications">6. Applications in Oil & Gas Industry</h2>
-  <p>LAS files are applied in many areas, including:</p>
-  <ul>
-    <li><strong>Reservoir Characterization:</strong> Determining lithology, porosity, and fluid type.</li>
-    <li><strong>Formation Evaluation:</strong> Estimating hydrocarbon saturation.</li>
-    <li><strong>Geological Studies:</strong> Correlating formations across wells.</li>
-    <li><strong>Drilling Operations:</strong> Identifying over-pressured zones and guiding drilling.</li>
-    <li><strong>Seismic Integration:</strong> Tying well logs to seismic data for structural mapping.</li>
-  </ul>
-
-  <h2 id="Avantages">7. Advantages of LAS Files</h2>
-  <ul>
-    <li>Simple text format, human-readable.</li>
-    <li>Compatible with almost all log analysis software.</li>
-    <li>Supports metadata and numerical data in one file.</li>
-    <li>Free and open standard.</li>
-  </ul>
-
-  <h2 id="Limitations">8. Limitations of LAS Files</h2>
-  <ul>
-    <li>Large file sizes compared to binary formats.</li>
-    <li>Errors can occur if formatting rules are not followed strictly.</li>
-    <li>Limited handling of very complex datasets.</li>
-  </ul>
-
-  <h2 id="Alternatives">9. Alternatives and Modern Formats</h2>
-  <p>
-    In addition to LAS, other formats exist:
-  </p>
-  <ul>
-    <li><strong>DLIS (Digital Log Interchange Standard):</strong> Binary format, efficient but less human-readable.</li>
-    <li><strong>WITSML:</strong> XML-based standard for drilling and production data.</li>
-    <li><strong>CSV/JSON:</strong> Sometimes used for simplified log storage.</li>
-  </ul>
-
-  <h2 id="Case_study">10. Case Studies and Practical Examples</h2>
-  <h3>Case Study 1: Reservoir Evaluation</h3>
-  <p>
-    An LAS file containing gamma ray, density, and neutron logs can be used to estimate shale 
-    content and porosity in a sandstone reservoir. This helps determine net pay zones and 
-    hydrocarbon potential.
-  </p>
-
-  <h3>Case Study 2: Academic Research</h3>
-  <p>
-    Students in petroleum engineering often download free LAS files from open data repositories. 
-    By analyzing them with software like Petrel or LASIO in Python, they learn key skills in 
-    petrophysics and data interpretation.
-  </p>
-
-  <h2 id="Conclusion">11. Conclusion</h2>
-  <p>
-    LAS files continue to play a crucial role in the petroleum industry. Despite newer formats, 
-    their simplicity, reliability, and universal acceptance ensure their relevance. For 
-    engineers, geoscientists, and students alike, LAS remains the foundation of well log 
-    interpretation.
-  </p>
-
-</main>
-
-</body>
- <script>
-    const toggle = document.getElementById('lasToggle');
-    const menu = document.getElementById('lasMenu');
-
-    toggle.addEventListener('click', () => {
-      menu.classList.toggle('show');
-    });
-  </script>
-
-
-
-  
 {% endblock %}

@@ -1,458 +1,527 @@
+{% extends 'base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Water Saturation</title>
+{% block title %}Water Saturation Calculator{% endblock %}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #0b0f1a;
-            color: white;
-        }
+{% block extra_css %}
+<style>
+    .sw-wrap * { box-sizing: border-box; }
 
-        .header {
-            padding: 20px;
-            text-align: center;
-            background: linear-gradient(90deg, #0f172a, #0ea5e9);
-        }
+    .sw-wrap .sw-title {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--ink);
+        margin-bottom: 4px;
+    }
 
-        .container {
-            width: 420px;
-            margin: 50px auto;
-            background: #111827;
-            padding: 25px;
-            border-radius: 10px;
-        }
+    .sw-wrap .sw-subtitle {
+        font-family: var(--font-mono);
+        font-size: 12.5px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--amber-deep);
+        margin-bottom: 24px;
+    }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 8px;
-            background: #0f172a;
-            border: 1px solid #334155;
-            color: white;
-        }
-
-        label {
-            margin-top: 10px;
-            display: block;
-            color: #cbd5e1;
-            font-size: 13px;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 10px;
-            background: #0ea5e9;
-            border: none;
-            color: white;
-            cursor: pointer;
-        }
-
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #0f172a;
-            border-left: 3px solid #0ea5e9;
-        }
-
-        .result-note{
-            margin-top:20px;
-            padding:15px;
-            background:#10182f;
-            border-left:5px solid #00d4ff;
-            border-radius:8px;
-            color:#e6e6e6;
-        }
-
-        .result-note h3{
-            color:#00d4ff;
-        }
-
-        .result-note h4{
-            margin-top:10px;
-            color:#ffffff;
-        }
-
-        /* NEW RELATIONSHIP SECTION */
-        .relationship-box{
-            margin-top:20px;
-            padding:15px;
-            background:#0f172a;
-            border-left:5px solid #38bdf8;
-            border-radius:8px;
-        }
-
-        .relationship-box h3{
-            color:#38bdf8;
-            margin-bottom:10px;
-        }
-
-        .relation{
-            background:#0b1220;
-            padding:10px;
-            border-radius:6px;
-            text-align:center;
-            font-weight:bold;
-            color:#00d4ff;
-            margin:10px 0;
-        }
-
-        .relationship-box p{
-            font-size:14px;
-            color:#cbd5e1;
-            line-height:1.6;
-        }
-
-        /* MOBILE RESPONSIVE */
-        @media (max-width: 600px){
-            .container{
-                width: 90%;
-                margin: 20px auto;
-            }
-        }
-
-        /* Diagram section */
-        .diagram-section{
-            margin-top:50px;
-            text-align:center;
-        }
-
-        .diagram-section img{
-            width:100%;
-            max-width:1000px;
-            border-radius:18px;
-            border:2px solid #1e293b;
-            margin-top:20px;
-        }
-
-            .card {
-        background: rgba(255,255,255,0.05);
-        padding: 18px;
-        margin-bottom: 15px;
+    .sw-wrap .sw-card {
+        background: var(--surface);
         border-radius: 10px;
-        border-left: 4px solid #00b4d8;
+        padding: 26px;
+        border: 1px solid var(--border-color);
+        border-top: 3px solid var(--teal);
+        margin-bottom: 22px;
     }
 
-    .formula {
-        font-family: monospace;
-        background: #0a0f1a;
-        padding: 10px;
+    /* FORMULA BANNER */
+    .sw-wrap .formula-banner {
+        text-align: center;
+        padding: 18px 24px;
+        background: var(--surface);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        margin-bottom: 22px;
+    }
+
+    .sw-wrap .formula-banner .label {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--ink-soft);
+        margin-bottom: 8px;
+    }
+
+    .sw-wrap .formula-banner .formula {
+        font-family: var(--font-mono);
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--teal);
+    }
+
+    .sw-wrap .formula-banner .desc {
+        margin-top: 10px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        line-height: 1.7;
+    }
+
+    .sw-wrap label {
+        display: block;
+        margin-top: 12px;
+        margin-bottom: 2px;
+        font-size: 13.5px;
+        font-weight: 500;
+        color: var(--ink-soft);
+    }
+
+    .sw-wrap input[type="number"] {
+        width: 100%;
+        padding: 10px 14px !important;
+        margin-top: 5px;
+        background: var(--surface) !important;
+        border: 1px solid #ced4da !important;
+        color: var(--ink) !important;
+        border-radius: 6px !important;
+        font-size: 15px !important;
+    }
+
+    .sw-wrap input[type="number"]:focus {
+        border-color: var(--ink) !important;
+        box-shadow: 0 0 0 0.15rem rgba(10,26,47,0.1) !important;
+        outline: none;
+    }
+
+    .sw-wrap input[type="number"]::placeholder {
+        color: #9aa4b2;
+    }
+
+    .sw-wrap .sw-btn {
+        margin-top: 20px;
+        width: 100%;
+        padding: 11px;
+        background: var(--ink);
+        border: none;
+        color: #ffffff;
         border-radius: 6px;
-        margin: 10px 0;
-        overflow-x: auto;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 500;
+        transition: background 0.2s ease, box-shadow 0.2s ease;
     }
 
-    .label {
-        color: #00d4ff;
-        font-weight: bold;
+    .sw-wrap .sw-btn:hover {
+        background: #001733;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.22);
     }
 
-.relationship-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
-}
+    .sw-wrap .sw-result {
+        margin-top: 20px;
+        padding: 16px 18px;
+        background: var(--paper);
+        border-left: 4px solid var(--teal);
+        border-radius: 6px;
+        color: var(--ink);
+    }
 
-.relationship-table th{
-    background:#0284c7;
-    padding:14px;
-    color:white;
-    text-align:left;
-}
+    /* RESULT NOTE */
+    .sw-wrap .result-note {
+        margin-top: 20px;
+        padding: 16px 18px;
+        background: var(--paper);
+        border-left: 4px solid var(--amber);
+        border-radius: 6px;
+        color: var(--ink);
+    }
+    .sw-wrap .result-note h3 {
+        font-family: var(--font-display);
+        font-size: 16px;
+        color: var(--amber-deep);
+        margin-bottom: 8px;
+    }
+    .sw-wrap .result-note ul { padding-left: 18px; margin: 0; }
+    .sw-wrap .result-note ul li { padding: 2px 0; color: var(--ink-soft); }
 
-.relationship-table td{
-    padding:12px;
-    background:#0f172a;
-    border-bottom:1px solid #1e293b;
-}
+    /* HISTORY TABLE SECTION */
+    .sw-wrap .history-section h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        margin-bottom: 4px;
+        font-size: 19px;
+    }
 
-.relationship-table input{
-    width:100%;
-    box-sizing:border-box;
-}
+    .sw-wrap .history-section p {
+        color: var(--ink-soft);
+        font-size: 13px;
+        margin-bottom: 15px;
+    }
 
-    </style>
-</head>
+    .sw-wrap .history-table {
+        width: 100%;
+        border-collapse: collapse;
+        border-radius: 8px;
+        overflow: hidden;
+    }
 
-<body>
+    .sw-wrap .history-table th {
+        background: var(--ink);
+        color: #ffffff;
+        padding: 12px 14px;
+        text-align: left;
+        font-size: 12.5px;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
 
-    <a href="{% url 'logs:analysis_home' %}">
-        <button type="submit" >Home</button>
-    </a>
+    .sw-wrap .history-table td {
+        background: var(--surface);
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border-hair);
+        color: var(--ink-soft);
+        font-size: 13.5px;
+    }
 
-<div class="header"> Water Saturation Calculator (Archie Equation)</div>
+    .sw-wrap .history-table tr:hover td { background: rgba(184,118,58,0.06); }
 
-<div class="container">
+    .sw-wrap .badge {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
 
-    <form method="POST">
-        {% csrf_token %}
+    .sw-wrap .badge-amber { background: rgba(184,118,58,0.14); color: var(--amber-deep); }
+    .sw-wrap .badge-teal  { background: rgba(31,111,108,0.14); color: var(--teal); }
 
-        <label>Resistivity of Water (Rw)</label>
-        <input type="number" name="rw" placeholder="(Rw)">
+    .sw-wrap .empty-state {
+        text-align: center;
+        padding: 25px;
+        color: #9aa4b2;
+        font-size: 14px;
+    }
 
-        <label>True Resistivity (Rt)</label>
-        <input type="number" name="rt" placeholder="(Rt)">
+    .sw-wrap .btn-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
 
-        <label>Porosity (Φ)</label>
-        <input type="number" name="phi" placeholder="(Φ)">
+    .sw-wrap .btn-plot {
+        flex: 1;
+        background: var(--teal);
+        padding: 10px;
+        border: none;
+        color: #ffffff;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
 
-        <label>Constants (a, m, n)</label>
-        <input type="number" name="a" placeholder="a">
-        <input type="number" name="m" placeholder="m">
-        <input type="number" name="n" placeholder="n">
+    .sw-wrap .btn-plot:hover { background: #175957; }
 
-        <button type="submit">Calculate Sw</button>
-    </form>
+    .sw-wrap .btn-clear {
+        flex: 1;
+        background: transparent;
+        padding: 10px;
+        border: 1px solid #c0392b;
+        color: #c0392b;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s ease;
+    }
 
-{% if result %}
+    .sw-wrap .btn-clear:hover { background: rgba(192,57,43,0.08); }
 
-<div class="result">
+    /* HISTORY GRAPH SECTION */
+    .sw-wrap .history-graph-section {
+        display: none; /* shown by JS when Plot is clicked */
+    }
 
-    <strong>Water Saturation Result:</strong>
+    .sw-wrap .history-graph-section h2 {
+        font-family: var(--font-display);
+        color: var(--ink);
+        margin-bottom: 20px;
+        font-size: 18px;
+        text-align: center;
+    }
 
-    <br><br>
+    /* DIAGRAM */
+    .sw-wrap .diagram-section { text-align: center; }
 
-    {{ result }}
+    .sw-wrap .diagram-section h2 {
+        font-family: var(--font-display);
+        font-size: 18px;
+        color: var(--ink);
+        margin-bottom: 16px;
+    }
 
-    <br><br>
+    .sw-wrap .diagram-section img {
+        width: 100%;
+        max-width: 900px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+    }
 
-    <strong>Water Saturation (%):</strong>
+    /* BOTTOM ACTION — plain professional button */
+    .sw-wrap .sw-more-link {
+        text-align: center;
+        margin-top: 8px;
+        margin-bottom: 0;
+    }
 
-    {{ result|floatformat:4 }} × 100
+    .sw-wrap .btn-more {
+        display: inline-block;
+        padding: 10px 22px;
+        border: 1px solid var(--ink);
+        color: var(--ink);
+        background: transparent;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    }
 
-</div>
+    .sw-wrap .btn-more:hover {
+        background: var(--ink);
+        color: #ffffff;
+        box-shadow: 0 6px 16px rgba(10,26,47,0.18);
+    }
 
-<!-- DYNAMIC INTERPRETATION -->
+    @media (max-width: 768px) {
+        .sw-wrap .sw-card { padding: 18px; }
+        .sw-wrap input[type="number"] { font-size: 14px; padding: 8px 12px !important; }
+        .sw-wrap .sw-btn { font-size: 14px; padding: 10px; }
+    }
+</style>
+{% endblock %}
 
-<div class="result-note">
+{% block content %}
+<div class="sw-wrap">
 
-    <h3>
-         Dynamic Reservoir Interpretation
-    </h3>
+    <div class="sw-title">Water Saturation Calculator</div>
+    <div class="sw-subtitle">Archie Equation</div>
 
-    <ul>
+    <!-- FORMULA BANNER -->
+    <div class="formula-banner">
+        <div class="label">Archie's Equation</div>
+        <div class="formula">Sw = ((a · Rw) / (Rt · φ<sup>m</sup>))<sup>1/n</sup></div>
+        <div class="desc">
+            <strong>Sw</strong> = Water saturation (fraction) &nbsp;|&nbsp;
+            <strong>Rw</strong> = Resistivity of formation water &nbsp;|&nbsp;
+            <strong>Rt</strong> = True resistivity of the formation<br>
+            <strong>φ</strong> = Porosity (fraction) &nbsp;|&nbsp;
+            <strong>a</strong> = Tortuosity factor &nbsp;|&nbsp;
+            <strong>m</strong> = Cementation exponent &nbsp;|&nbsp;
+            <strong>n</strong> = Saturation exponent<br>
+            Lower Sw combined with good porosity generally points to greater hydrocarbon saturation.
+        </div>
+    </div>
 
-        {% for item in interpretation %}
+    <!-- CALCULATOR FORM -->
+    <div class="sw-card">
 
-            <li style="margin-bottom:10px; line-height:1.7;">
-                {{ item }}
-            </li>
+        <form method="POST">
+            {% csrf_token %}
 
-        {% endfor %}
+            <label>Resistivity of Water (Rw)</label>
+            <input type="number" name="rw" step="any" placeholder="e.g. 0.05">
 
-    </ul>
+            <label>True Resistivity (Rt)</label>
+            <input type="number" name="rt" step="any" placeholder="e.g. 20">
 
-</div>
+            <label>Porosity (Φ)</label>
+            <input type="number" name="phi" step="any" placeholder="e.g. 0.18">
 
-{% endif %}
+            <label>Constants (a, m, n)</label>
+            <input type="number" name="a" step="any" placeholder="a (tortuosity, default 1)">
+            <input type="number" name="m" step="any" placeholder="m (cementation, default 2)">
+            <input type="number" name="n" step="any" placeholder="n (saturation exp, default 2)">
 
-</div>
+            <button type="submit" class="sw-btn">Calculate Sw</button>
+        </form>
 
+        {% if result %}
 
-<!-- ===================================== -->
-<!-- GRAPH INPUT TABLE -->
-<!-- ===================================== -->
+        <div class="sw-result">
+            <strong>Water Saturation Result:</strong><br><br>
+            {{ result }}
+            <br><br>
+            <strong>Water Saturation (%):</strong>
+            {{ result|floatformat:4 }} × 100
+        </div>
 
-<div class="relationship-box">
-
-    <h3>
-         Water Saturation vs Porosity Input Table
-    </h3>
-
-    <form method="POST">
-
-        {% csrf_token %}
-
-        <table class="relationship-table">
-
-            <thead>
-
-                <tr>
-                    <th>Point</th>
-                    <th>Porosity (Φ)</th>
-                    <th>Water Saturation (Sw)</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                {% for i in "12345678" %}
-
-                <tr>
-
-                    <td>{{ forloop.counter }}</td>
-
-                    <td>
-                        <input type="number"
-                               step="any"
-                               name="phi_{{ forloop.counter }}"
-                               placeholder="Porosity">
-                    </td>
-
-                    <td>
-                        <input type="number"
-                               step="any"
-                               name="sw_{{ forloop.counter }}"
-                               placeholder="Water Saturation">
-                    </td>
-
-                </tr>
-
+        <div class="result-note">
+            <h3>Dynamic Reservoir Interpretation</h3>
+            <ul>
+                {% for item in interpretation %}
+                    <li>{{ item }}</li>
                 {% endfor %}
+            </ul>
+        </div>
 
+        {% endif %}
+
+    </div>
+
+
+    <!-- HISTORY TABLE (latest 5 calculations) -->
+    <div class="sw-card history-section">
+
+        <h2>Recent Calculations</h2>
+        <p>Stores the last 5 calculations. Older entries are automatically removed when a new one is added.</p>
+
+        {% if history %}
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Rw</th>
+                    <th>Rt</th>
+                    <th>φ</th>
+                    <th>a</th>
+                    <th>m</th>
+                    <th>n</th>
+                    <th>Sw (fraction)</th>
+                    <th>Sw (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ entry.rw }}</td>
+                    <td>{{ entry.rt }}</td>
+                    <td>{{ entry.phi }}</td>
+                    <td>{{ entry.a }}</td>
+                    <td>{{ entry.m }}</td>
+                    <td>{{ entry.n }}</td>
+                    <td><span class="badge badge-amber">{{ entry.sw }}</span></td>
+                    <td><span class="badge badge-teal">{{ entry.sw_percent }}%</span></td>
+                </tr>
+                {% endfor %}
             </tbody>
-
         </table>
 
-        <button type="submit">
-            Plot Graph
-        </button>
+        <div class="btn-row">
+            <button type="button" class="btn-plot" onclick="showHistoryGraph()">Plot Graph</button>
 
-    </form>
+            <form method="POST" action="{% url 'logs:sw_clear_history' %}" style="flex:1; margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="btn-clear" style="width:100%;">
+                    Clear History
+                </button>
+            </form>
+        </div>
+
+        {% else %}
+        <div class="empty-state">
+            No calculations yet. Enter values above and click <strong>Calculate Sw</strong>.
+        </div>
+        {% endif %}
+
+    </div>
+
+
+    <!-- HISTORY GRAPH (Sw % vs Porosity) -->
+    <div class="sw-card history-graph-section" id="historyGraphSection">
+        <h2>Water Saturation (%) vs Porosity (φ)</h2>
+        <canvas id="historyChart"></canvas>
+    </div>
+
+
+    <!-- DIAGRAM -->
+    <div class="sw-card diagram-section">
+        <h2>Graphical Saturation Relationship Diagram</h2>
+        <img src="{% static 'img/sw.png' %}" alt="Water Saturation Relationship Diagram">
+    </div>
+
+    <div class="sw-more-link">
+        <a href="{% url 'logs:sw_details' %}">
+            <button type="button" class="btn-more">More Details on Water Saturation</button>
+        </a>
+    </div>
 
 </div>
+{% endblock %}
 
-
-<!-- ===================================== -->
-<!-- GRAPH -->
-<!-- ===================================== -->
-
-<div class="relationship-box">
-
-    <h3>
-         Water Saturation vs Porosity Graph
-    </h3>
-
-    <canvas id="swChart"></canvas>
-
-</div>
-
-
-<!-- DIAGRAM -->
-
-<div class="diagram-section">
-
-    <h2 style="color:#38bdf8;">
-        Graphical Density Relationship Diagram
-    </h2>
-
-    <img src="{% static 'img/sw.png' %}"
-            alt="Density Relationship Diagram">
-
-</div>
-
-<a href="{% url 'logs:sw_details' %}">
-    <button type="submit">More details on water saturation</button>
-</a>
-
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
+    /* ── Sw (%) vs Porosity from session history ─── */
+    const historyPhi = {{ history_phi|safe }};
+    const historySw  = {{ history_sw|safe }};
 
-    const dataPoints = JSON.parse('{{ graph_points|escapejs }}');
+    let historyChartInstance = null;
 
-    const ctx = document.getElementById('swChart');
+    function showHistoryGraph() {
+        const section = document.getElementById('historyGraphSection');
 
-    new Chart(ctx, {
+        if (historyPhi.length === 0) {
+            alert('No history data to plot. Calculate at least one Sw value first.');
+            return;
+        }
 
-        type: 'scatter',
+        section.style.display = 'block';
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        data: {
+        if (historyChartInstance) historyChartInstance.destroy();
 
-            datasets: [{
+        const hCtx = document.getElementById('historyChart').getContext('2d');
 
-                label: 'Water Saturation vs Porosity',
-
-                data: dataPoints,
-
-                borderColor: '#38bdf8',
-
-                backgroundColor: '#38bdf8',
-
-                showLine: true,
-
-                tension: 0.4,
-
-                pointRadius: 6,
-
-                pointHoverRadius: 8,
-
-                fill: false
-            }]
-        },
-
-        options: {
-
-            responsive: true,
-
-            plugins: {
-
-                legend: {
-
-                    labels: {
-                        color: 'white'
-                    }
-                }
+        historyChartInstance = new Chart(hCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Sw (%) vs Porosity (φ)',
+                    data: historyPhi.map((phi, i) => ({ x: phi, y: historySw[i] })),
+                    borderColor: '#1f6f6c',
+                    backgroundColor: 'rgba(31,111,108,0.15)',
+                    showLine: true,
+                    tension: 0.4,
+                    pointRadius: 7,
+                    pointHoverRadius: 9,
+                    pointBorderColor: '#fff',
+                    fill: false,
+                    borderWidth: 2.5,
+                }]
             },
-
-            scales: {
-
-                x: {
-
-                    type: 'linear',
-
-                    position: 'bottom',
-
-                    title: {
-
-                        display: true,
-
-                        text: 'Porosity (Φ)',
-
-                        color: 'white'
-                    },
-
-                    ticks: {
-                        color: 'white'
-                    },
-
-                    grid: {
-                        color: '#334155'
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { labels: { color: '#0a1a2f', font: { size: 13 } } },
+                    tooltip: {
+                        backgroundColor: '#0a1a2f',
+                        titleColor: '#ffffff',
+                        bodyColor: '#e5e7eb',
+                        callbacks: {
+                            label: ctx => ` φ = ${ctx.parsed.x}  |  Sw = ${ctx.parsed.y}%`
+                        }
                     }
                 },
-
-                y: {
-
-                    title: {
-
-                        display: true,
-
-                        text: 'Water Saturation (Sw)',
-
-                        color: 'white'
+                scales: {
+                    x: {
+                        type: 'linear',
+                        position: 'bottom',
+                        title: { display: true, text: 'Porosity (φ)', color: '#0a1a2f' },
+                        ticks: { color: '#43526b' },
+                        grid:  { color: '#e7eaee' }
                     },
-
-                    ticks: {
-                        color: 'white'
-                    },
-
-                    grid: {
-                        color: '#334155'
+                    y: {
+                        title: { display: true, text: 'Water Saturation Sw (%)', color: '#0a1a2f' },
+                        ticks: { color: '#43526b', callback: v => v + '%' },
+                        grid:  { color: '#e7eaee' }
                     }
                 }
             }
-        }
-    });
-
+        });
+    }
 </script>
-
-</body>
-
-</html> 
+{% endblock %}
